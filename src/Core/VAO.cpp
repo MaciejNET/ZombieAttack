@@ -15,7 +15,7 @@ namespace Core {
         glDeleteVertexArrays(1, &_id);
     }
 
-    void VAO::LinkVBO(const VBO &VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void *offset) const
+    void VAO::LinkAttrib(const VBO &VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void *offset) const
     {
         VBO.Bind();
         glVertexAttribPointer(layout, numComponents, type, GL_FALSE, stride, offset);

@@ -12,7 +12,7 @@ namespace Core {
     public:
         VAO();
         ~VAO();
-        void LinkVBO(const VBO& VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void* offset) const;
+        void LinkAttrib(const VBO& VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void* offset) const;
         void Bind() const;
         void Unbind() const;
         void Delete() const;

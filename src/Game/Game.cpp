@@ -14,7 +14,7 @@ void Game::Init()
 {
     // Create entities
     auto camera = new ECS::Entity(&_scene);
-    auto cameraComponent = new Scene::CameraComponent(Core::Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f, 2.5f));
+    auto cameraComponent = new Scene::CameraComponent(Core::Camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f, 2.5f));
     camera->AddComponent(std::unique_ptr<Scene::CameraComponent>(cameraComponent));
     _scene.AddEntity(camera);
 
@@ -25,7 +25,8 @@ void Game::Init()
 
     auto cube = new ECS::Entity(&_scene);
     auto transformComponent = new Scene::TransformComponent();
-    transformComponent->Transform = glm::translate(transformComponent->Transform, glm::vec3(0.0f, 0.0f, 3.0f));
+    transformComponent->Transform = glm::translate(transformComponent->Transform, glm::vec3(0.0f, 0.0f, 0.0f));
+    transformComponent->Transform = glm::scale(transformComponent->Transform, glm::vec3(1.5f));
     cube->AddComponent(std::unique_ptr<Scene::TransformComponent>(transformComponent));
     auto spriteRendererComponent = new Scene::SpriteRendererComponent(glm::vec4(1.0f, 0.5f, 0.31f, 1.0f));
     cube->AddComponent(std::unique_ptr<Scene::SpriteRendererComponent>(spriteRendererComponent));
