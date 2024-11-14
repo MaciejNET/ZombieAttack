@@ -33,6 +33,7 @@ namespace Core {
     private:
         static void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
         static void UpdateViewport(int width, int height);
+        static void CursorPositionCallback(GLFWwindow* window, double xpos, double ypos);
         static std::unique_ptr<GLFWwindow, decltype(&glfwDestroyWindow)> _window;
         static std::vector<Resolution> resolutions;
         static int currentResolutionIndex;

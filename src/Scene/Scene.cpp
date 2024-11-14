@@ -18,14 +18,14 @@ namespace Scene {
             if (entity->HasComponent<ScriptableComponent>())
             {
                 auto scriptableEntity = entity->GetComponent<ScriptableComponent>();
-                if (!scriptableEntity->Instance)
+                if (!scriptableEntity.Instance)
                 {
-                    scriptableEntity->Instance = scriptableEntity->InstantiateScript();
-                    scriptableEntity->Instance->_entity = entity;
-                    scriptableEntity->Instance->OnCreate();
+                    scriptableEntity.Instance = scriptableEntity.InstantiateScript();
+                    scriptableEntity.Instance->_entity = entity;
+                    scriptableEntity.Instance->OnCreate();
                 }
 
-                scriptableEntity->Instance->OnUpdate(deltaTime);
+                scriptableEntity.Instance->OnUpdate(deltaTime);
             }
         }
 
@@ -34,15 +34,15 @@ namespace Scene {
         });
 
         ZA_ASSERT(std::ranges::any_of(cameras, [](const ECS::Entity* entity) {
-            return entity->GetComponent<CameraComponent>()->Primary;
+            return entity->GetComponent<CameraComponent>().Primary;
         }), "No primary camera found.");
 
         ZA_ASSERT(std::ranges::count_if(cameras, [](const ECS::Entity* entity) {
-            return entity->GetComponent<CameraComponent>()->Primary;
+            return entity->GetComponent<CameraComponent>().Primary;
         }) == 1, "More than one primary camera found.");
 
         auto mainCameraIt = std::ranges::find_if(cameras, [](const ECS::Entity* entity) {
-            return entity->GetComponent<CameraComponent>()->Primary;
+            return entity->GetComponent<CameraComponent>().Primary;
         });
 
         ECS::Entity* mainCamera = (mainCameraIt != cameras.end()) ? *mainCameraIt : nullptr;

@@ -16,11 +16,11 @@ namespace Renderer {
             entity.HasComponent<Scene::MeshComponent>() &&
             entity.HasComponent<Scene::SpriteRendererComponent>())
         {
-            const auto& transform = *entity.GetComponent<Scene::TransformComponent>();
-            const auto& mesh = *entity.GetComponent<Scene::MeshComponent>();
-            const auto& spriteRenderer = *entity.GetComponent<Scene::SpriteRendererComponent>();
-            const auto& camera = *cameraEntity.GetComponent<Scene::CameraComponent>();
-            const auto& light = *lightEntity.GetComponent<Scene::LightComponent>();
+            const auto& transform = entity.GetComponent<Scene::TransformComponent>();
+            const auto& mesh = entity.GetComponent<Scene::MeshComponent>();
+            const auto& spriteRenderer = entity.GetComponent<Scene::SpriteRendererComponent>();
+            const auto& camera = cameraEntity.GetComponent<Scene::CameraComponent>();
+            const auto& light = lightEntity.GetComponent<Scene::LightComponent>();
             const std::vector<std::function<void(const Core::Shader&)>> setFunctions = {
                 [&](const Core::Shader& shader) { shader.SetMat4("view", camera.Camera.GetViewMatrix()); },
                 [&](const Core::Shader& shader) { shader.SetMat4("projection", camera.Camera.GetProjectionMatrix()); },
@@ -33,15 +33,5 @@ namespace Renderer {
 
             mesh.Mesh.Draw(mesh.Shader, setFunctions);
         }
-    }
-
-    void Renderer::SetClearColor(const float r, const float g, const float b, const float a) const
-    {
-        glClearColor(r, g, b, a);
-    }
-
-    void Renderer::Clear() const
-    {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 }

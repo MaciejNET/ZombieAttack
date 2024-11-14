@@ -2,6 +2,7 @@
 
 #include <glm/ext/matrix_transform.hpp>
 
+#include "Components/CameraController.hpp"
 #include "Core/BaseShapes.hpp"
 #include "Scene/Components.hpp"
 
@@ -14,27 +15,21 @@ void Game::Init()
 {
     // Create entities
     auto camera = new ECS::Entity(&_scene);
-    auto cameraComponent = new Scene::CameraComponent(Core::Camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f, 2.5f));
-    camera->AddComponent(std::unique_ptr<Scene::CameraComponent>(cameraComponent));
+    camera->AddComponent<Scene::CameraComponent>(Core::Camera());
+    camera->AddComponent<Scene::ScriptableComponent>().Bind<CameraController>();
     _scene.AddEntity(camera);
 
     auto light = new ECS::Entity(&_scene);
-    auto lightComponent = new Scene::LightComponent(glm::vec4(1.0f), glm::vec3(0.0f, 1.0f, 1.0f), 1.0f);
-    light->AddComponent(std::unique_ptr<Scene::LightComponent>(lightComponent));
+    light->AddComponent<Scene::LightComponent>(glm::vec4(1.0f), glm::vec3(0.0f), 1.0f);
     _scene.AddEntity(light);
 
     auto cube = new ECS::Entity(&_scene);
-    auto transformComponent = new Scene::TransformComponent();
-    transformComponent->Transform = glm::translate(transformComponent->Transform, glm::vec3(0.0f, 0.0f, 0.0f));
-    transformComponent->Transform = glm::scale(transformComponent->Transform, glm::vec3(1.5f));
-    cube->AddComponent(std::unique_ptr<Scene::TransformComponent>(transformComponent));
-    auto spriteRendererComponent = new Scene::SpriteRendererComponent(glm::vec4(1.0f, 0.5f, 0.31f, 1.0f));
-    cube->AddComponent(std::unique_ptr<Scene::SpriteRendererComponent>(spriteRendererComponent));
+    cube->AddComponent<Scene::TransformComponent>(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f)));
+    cube->AddComponent<Scene::SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
     auto cubeShape = Core::BaseShapes::Cube();
     auto mesh = new Core::Mesh(cubeShape.Vertices, cubeShape.Indices);
     auto shader = new Core::Shader("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");
-    auto meshComponent = new Scene::MeshComponent(*mesh, *shader);
-    cube->AddComponent(std::unique_ptr<Scene::MeshComponent>(meshComponent));
+    cube->AddComponent<Scene::MeshComponent>(*mesh, *shader);
     _scene.AddEntity(cube);
 }
 

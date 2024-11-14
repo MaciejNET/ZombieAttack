@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "Macros.hpp"
 
@@ -93,16 +94,16 @@ namespace Core {
 
     void Shader::SetVec3(const char* name, const glm::vec3& value) const
     {
-        glUniform3fv(glGetUniformLocation(_id, name), 1, &value[0]);
+        glUniform3fv(glGetUniformLocation(_id, name), 1, glm::value_ptr(value));
     }
 
     void Shader::SetVec4(const char* name, const glm::vec4& value) const
     {
-        glUniform4fv(glGetUniformLocation(_id, name), 1, &value[0]);
+        glUniform4fv(glGetUniformLocation(_id, name), 1, glm::value_ptr(value));
     }
 
     void Shader::SetMat4(const char* name, const glm::mat4& value) const
     {
-        glUniformMatrix4fv(glGetUniformLocation(_id, name), 1, GL_FALSE, &value[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(_id, name), 1, GL_FALSE, glm::value_ptr(value));
     }
 }

@@ -74,14 +74,14 @@ namespace Scene {
     struct ScriptableComponent final : ECS::Component
     {
         ECS::ScriptableEntity* Instance{nullptr};
-        ECS::ScriptableEntity* (*InstantiateScript)();
-        void (*DestroyScript)(ECS::ScriptableEntity*);
+        std::function<ECS::ScriptableEntity*()> InstantiateScript;
+        std::function<void(ECS::ScriptableEntity*)> DestroyScript;
 
         template<typename T>
         void Bind()
         {
             InstantiateScript = []() { return static_cast<ECS::ScriptableEntity*>(new T()); };
-            DestroyScript = [](ScriptableComponent* sc) { delete sc->Instance; sc->Instance = nullptr; };
+            DestroyScript = [](ECS::ScriptableEntity* instance) { delete instance; };
         }
     };
 }

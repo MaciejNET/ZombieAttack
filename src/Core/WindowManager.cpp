@@ -24,6 +24,7 @@ namespace Core {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 
         GLFWwindow* window = glfwCreateWindow(width, height, title, nullptr, nullptr);
@@ -43,6 +44,7 @@ namespace Core {
         }
 
         glfwSetFramebufferSizeCallback(_window.get(), FramebufferSizeCallback);
+        glfwSetCursorPosCallback(_window.get(), CursorPositionCallback);
         glEnable(GL_DEPTH_TEST);
     }
 
@@ -53,20 +55,7 @@ namespace Core {
 
     void WindowManager::UpdateViewport(int width, int height)
     {
-        float targetAspectRatio = 800.0f / 600.0f;
-        int viewWidth = width;
-        int viewHeight = static_cast<int>((float)width / targetAspectRatio);
-
-        if (viewHeight > height)
-        {
-            viewHeight = height;
-            viewWidth = static_cast<int>((float)height * targetAspectRatio);
-        }
-
-        int xOffset = (width - viewWidth) / 2;
-        int yOffset = (height - viewHeight) / 2;
-
-        glViewport(xOffset, yOffset, viewWidth, viewHeight);
+        glViewport(0, 0, width, height);
     }
 
     void WindowManager::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
@@ -128,7 +117,10 @@ namespace Core {
         else
         {
             auto res = resolutions[currentResolutionIndex];
-            glfwSetWindowMonitor(_window.get(), nullptr, 100, 100, res.width, res.height, GLFW_DONT_CARE);
+            int xpos = (mode->width - res.width) / 2;
+            int ypos = (mode->height - res.height) / 2;
+
+            glfwSetWindowMonitor(_window.get(), nullptr, xpos, ypos, res.width, res.height, mode->refreshRate);
             UpdateViewport(res.width, res.height);
         }
     }
@@ -163,5 +155,18 @@ namespace Core {
     void WindowManager::TurnOffCursor()
     {
         glfwSetInputMode(_window.get(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+
+    void WindowManager::CursorPositionCallback(GLFWwindow* window, double xpos, double ypos)
+    {
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+
+        if (xpos < 0) xpos = 0;
+        if (xpos > width) xpos = width;
+        if (ypos < 0) ypos = 0;
+        if (ypos > height) ypos = height;
+
+        glfwSetCursorPos(window, xpos, ypos);
     }
 }

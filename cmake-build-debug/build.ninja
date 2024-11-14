@@ -154,6 +154,13 @@ build CMakeFiles/ZombieAttack.dir/src/Game/Game.cpp.o: CXX_COMPILER__ZombieAttac
   OBJECT_DIR = CMakeFiles/ZombieAttack.dir
   OBJECT_FILE_DIR = CMakeFiles/ZombieAttack.dir/src/Game
 
+build CMakeFiles/ZombieAttack.dir/src/Game/Components/CameraController.cpp.o: CXX_COMPILER__ZombieAttack_unscanned_Debug /Users/maciejderon/Projects/ZombieAttack/src/Game/Components/CameraController.cpp || cmake_object_order_depends_target_ZombieAttack
+  DEP_FILE = CMakeFiles/ZombieAttack.dir/src/Game/Components/CameraController.cpp.o.d
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk -mmacosx-version-min=15.0 -fcolor-diagnostics
+  INCLUDES = -I/Users/maciejderon/Projects/ZombieAttack/dependencies/include -I/Users/maciejderon/Projects/ZombieAttack/. -I/Users/maciejderon/Projects/ZombieAttack/src -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk/System/Library/Frameworks
+  OBJECT_DIR = CMakeFiles/ZombieAttack.dir
+  OBJECT_FILE_DIR = CMakeFiles/ZombieAttack.dir/src/Game/Components
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target ZombieAttack
@@ -162,7 +169,7 @@ build CMakeFiles/ZombieAttack.dir/src/Game/Game.cpp.o: CXX_COMPILER__ZombieAttac
 #############################################
 # Link the executable ZombieAttack
 
-build ZombieAttack: CXX_EXECUTABLE_LINKER__ZombieAttack_Debug CMakeFiles/ZombieAttack.dir/src/glad.c.o CMakeFiles/ZombieAttack.dir/main.cpp.o CMakeFiles/ZombieAttack.dir/src/Core/VAO.cpp.o CMakeFiles/ZombieAttack.dir/src/Core/VBO.cpp.o CMakeFiles/ZombieAttack.dir/src/Core/EBO.cpp.o CMakeFiles/ZombieAttack.dir/src/Core/Mesh.cpp.o CMakeFiles/ZombieAttack.dir/src/Core/Shader.cpp.o CMakeFiles/ZombieAttack.dir/src/Core/Camera.cpp.o CMakeFiles/ZombieAttack.dir/src/Core/WindowManager.cpp.o CMakeFiles/ZombieAttack.dir/src/Core/InputManager.cpp.o CMakeFiles/ZombieAttack.dir/src/Events/EventBus.cpp.o CMakeFiles/ZombieAttack.dir/src/App.cpp.o CMakeFiles/ZombieAttack.dir/src/Scene/Scene.cpp.o CMakeFiles/ZombieAttack.dir/src/Renderer/Renderer.cpp.o CMakeFiles/ZombieAttack.dir/src/Game/Game.cpp.o | /Users/maciejderon/Projects/ZombieAttack/dependencies/lib/libglfw3.a /Users/maciejderon/Projects/ZombieAttack/dependencies/lib/libassimp.a
+build ZombieAttack: CXX_EXECUTABLE_LINKER__ZombieAttack_Debug CMakeFiles/ZombieAttack.dir/src/glad.c.o CMakeFiles/ZombieAttack.dir/main.cpp.o CMakeFiles/ZombieAttack.dir/src/Core/VAO.cpp.o CMakeFiles/ZombieAttack.dir/src/Core/VBO.cpp.o CMakeFiles/ZombieAttack.dir/src/Core/EBO.cpp.o CMakeFiles/ZombieAttack.dir/src/Core/Mesh.cpp.o CMakeFiles/ZombieAttack.dir/src/Core/Shader.cpp.o CMakeFiles/ZombieAttack.dir/src/Core/Camera.cpp.o CMakeFiles/ZombieAttack.dir/src/Core/WindowManager.cpp.o CMakeFiles/ZombieAttack.dir/src/Core/InputManager.cpp.o CMakeFiles/ZombieAttack.dir/src/Events/EventBus.cpp.o CMakeFiles/ZombieAttack.dir/src/App.cpp.o CMakeFiles/ZombieAttack.dir/src/Scene/Scene.cpp.o CMakeFiles/ZombieAttack.dir/src/Renderer/Renderer.cpp.o CMakeFiles/ZombieAttack.dir/src/Game/Game.cpp.o CMakeFiles/ZombieAttack.dir/src/Game/Components/CameraController.cpp.o | /Users/maciejderon/Projects/ZombieAttack/dependencies/lib/libglfw3.a /Users/maciejderon/Projects/ZombieAttack/dependencies/lib/libassimp.a
   FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk -mmacosx-version-min=15.0
   LINK_LIBRARIES = /Users/maciejderon/Projects/ZombieAttack/dependencies/lib/libglfw3.a  /Users/maciejderon/Projects/ZombieAttack/dependencies/lib/libassimp.a  -framework CoreFoundation  -framework CoreGraphics  -framework IOKit  -framework Cocoa
   OBJECT_DIR = CMakeFiles/ZombieAttack.dir

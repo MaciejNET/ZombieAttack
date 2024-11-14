@@ -23,21 +23,23 @@ namespace ECS {
 
         const uuid_t& GetUUID() const { return _id; }
 
-        template<typename T>
-        void AddComponent(std::unique_ptr<T> component)
+        template<typename T, typename... Args>
+        T& AddComponent(Args&&... args)
         {
-            _components[typeid(T)] = std::move(component);
+            T* component = new T(std::forward<Args>(args)...);
+            _components[typeid(T)] = std::unique_ptr<Component>(component);
+            return *component;
         }
 
         template<typename T>
-        T* GetComponent() const
+        T& GetComponent() const
         {
             const auto it = _components.find(typeid(T));
             if (it != _components.end())
             {
-                return dynamic_cast<T*>(it->second.get());
+                return *dynamic_cast<T*>(it->second.get());
             }
-            return nullptr;
+            throw std::runtime_error("Component not found");
         }
 
         std::vector<Component*> GetComponents() const

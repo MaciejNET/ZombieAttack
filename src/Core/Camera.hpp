@@ -10,15 +10,10 @@ namespace Core {
     class Camera
     {
     public:
+        Camera();
         Camera(const glm::vec3 &position, const glm::vec3 &worldUp, float yaw, float pitch, float movementSpeed);
         ~Camera();
-        void MoveForward(float deltaTime);
-        void MoveBackward(float deltaTime);
-        void MoveRight(float deltaTime);
-        void MoveLeft(float deltaTime);
-        void MoveUp(float deltaTime);
-        void MoveDown(float deltaTime);
-        void Rotate(float xoffset, float yoffset, bool constrainPitch = true);
+        void Transform(const glm::vec3 &translation, const glm::vec3 &rotation, float deltaTime);
         void UpdateCameraVectors();
         glm::mat4 GetViewMatrix() const;
         glm::mat4 GetProjectionMatrix() const;
@@ -30,16 +25,16 @@ namespace Core {
         float GetZoom() const;
 
     private:
-        glm::vec3 _position{};
-        glm::vec3 _front{};
-        glm::vec3 _up{};
-        glm::vec3 _right{};
-        glm::vec3 _worldUp{};
-        float _yaw{};
-        float _pitch{};
-        float _movementSpeed{};
-        float _mouseSensitivity{};
-        float _zoom{};
+        glm::vec3 _position{0.0f, 0.0f, 0.0f};
+        glm::vec3 _front{0.0f, 0.0f, -1.0f};
+        glm::vec3 _up{0.0f, 1.0f, 0.0f};
+        glm::vec3 _right{1.0f, 0.0f, 0.0f};
+        glm::vec3 _worldUp{0.0f, 1.0f, 0.0f};
+        float _yaw{-90.0f};
+        float _pitch{0.0f};
+        float _movementSpeed{2.5f};
+        float _mouseSensitivity{0.1f};
+        float _zoom{45.0f};
     };
 }
 

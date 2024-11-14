@@ -6,6 +6,11 @@
 #include "WindowManager.hpp"
 
 namespace Core {
+    Camera::Camera()
+    {
+        UpdateCameraVectors();
+    }
+
     Camera::Camera(const glm::vec3 &position, const glm::vec3 &worldUp, float yaw, float pitch, float movementSpeed)
         : _position(position), _worldUp(worldUp), _yaw(yaw), _pitch(pitch), _movementSpeed(movementSpeed)
     {
@@ -14,51 +19,19 @@ namespace Core {
 
     Camera::~Camera() = default;
 
-    void Camera::MoveForward(float deltaTime)
+    void Camera::Transform(const glm::vec3 &translation, const glm::vec3 &rotation, float deltaTime)
     {
-        _position += _front * _movementSpeed * deltaTime;
-    }
+        _position += _front * translation.z * _movementSpeed * deltaTime;
+        _position += _right * translation.x * _movementSpeed * deltaTime;
+        _position += _up * translation.y * _movementSpeed * deltaTime;
 
-    void Camera::MoveBackward(float deltaTime)
-    {
-        _position -= _front * _movementSpeed * deltaTime;
-    }
+        _yaw += rotation.y * _mouseSensitivity;
+        _pitch += rotation.x * _mouseSensitivity;
 
-    void Camera::MoveRight(float deltaTime)
-    {
-        _position += _right * _movementSpeed * deltaTime;
-    }
-
-    void Camera::MoveLeft(float deltaTime)
-    {
-        _position -= _right * _movementSpeed * deltaTime;
-    }
-
-    void Camera::MoveUp(float deltaTime)
-    {
-        _position += _up * _movementSpeed * deltaTime;
-    }
-
-    void Camera::MoveDown(float deltaTime)
-    {
-        _position -= _up * _movementSpeed * deltaTime;
-    }
-
-    void Camera::Rotate(float xoffset, float yoffset, bool constrainPitch)
-    {
-        xoffset *= _mouseSensitivity;
-        yoffset *= _mouseSensitivity;
-
-        _yaw += xoffset;
-        _pitch += yoffset;
-
-        if (constrainPitch)
-        {
-            if (_pitch > 89.0f)
-                _pitch = 89.0f;
-            if (_pitch < -89.0f)
-                _pitch = -89.0f;
-        }
+        if (_pitch > 89.0f)
+            _pitch = 89.0f;
+        if (_pitch < -89.0f)
+            _pitch = -89.0f;
 
         UpdateCameraVectors();
     }

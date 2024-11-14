@@ -21,6 +21,7 @@ void App::Run()
     glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(Core::WindowManager::GetWindow()))
     {
+        glfwMakeContextCurrent(Core::WindowManager::GetWindow());
         glfwSwapInterval(0);
         const auto startFrame = static_cast<float>(glfwGetTime());
         Core::InputManager::Update();
