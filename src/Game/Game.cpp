@@ -49,6 +49,16 @@ void Game::Init()
     cube2->AddComponent<Scene::MeshComponent>(*mesh2, *shader2);
     cube2->AddComponent<Scene::CollisionComponent>();
     _scene.AddEntity(cube2);
+
+    auto floor = new ECS::Entity(&_scene);
+    auto& transform = floor->AddComponent<Scene::TransformComponent>(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.6f, 0.0f)));
+    transform.Transform = glm::scale(transform.Transform, glm::vec3(10.0f, 0.1f, 10.0f));
+    floor->AddComponent<Scene::SpriteRendererComponent>(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
+    auto floorShape = Core::BaseShapes::Cube();
+    auto floorMesh = new Core::Mesh(floorShape.Vertices, floorShape.Indices);
+    auto floorShader = new Core::Shader("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");
+    floor->AddComponent<Scene::MeshComponent>(*floorMesh, *floorShader);
+    _scene.AddEntity(floor);
 }
 
 void Game::Update(float deltaTime)

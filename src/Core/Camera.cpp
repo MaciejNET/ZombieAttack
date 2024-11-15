@@ -50,6 +50,11 @@ namespace Core {
         UpdateCameraVectors();
     }
 
+    void Camera::SetPosition(const glm::vec3 &position)
+    {
+        _position = position;
+        UpdateCameraVectors();
+    }
 
     void Camera::UpdateCameraVectors()
     {

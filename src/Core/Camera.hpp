@@ -17,6 +17,7 @@ namespace Core {
         void Rotate(const glm::vec3 &axis, float angle);
         void UpdateCameraVectors();
         void LookAt(const glm::vec3 &target);
+        void SetPosition(const glm::vec3 &position);
         glm::mat4 GetViewMatrix() const;
         glm::mat4 GetProjectionMatrix() const;
         glm::vec3 GetPosition() const;

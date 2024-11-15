@@ -111,13 +111,11 @@ namespace Scene {
                 auto& collidableTransform = collidableEntity->GetComponent<TransformComponent>().Transform;
                 auto& collidableMesh = collidableEntity->GetComponent<MeshComponent>().Mesh;
 
-                // Retrieve the bounding box of the other entity
                 auto collidableBoundingBox = ComputeBoundingBox(collidableMesh, collidableTransform);
 
-                // Check if the bounding boxes overlap
                 if (AreBoundingBoxesOverlapping(entityBoundingBox, collidableBoundingBox))
                 {
-                    return collidableEntity; // Return the first colliding entity
+                    return collidableEntity;
                 }
             }
 
