@@ -66,6 +66,8 @@ namespace ECS {
         {
             _components.erase(typeid(T));
         }
+
+        Scene::Scene* GetScene() const { return _scene; }
     private:
         uuid_t _id{};
         std::unordered_map<std::type_index, std::unique_ptr<Component>> _components;

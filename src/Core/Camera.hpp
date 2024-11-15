@@ -13,8 +13,10 @@ namespace Core {
         Camera();
         Camera(const glm::vec3 &position, const glm::vec3 &worldUp, float yaw, float pitch, float movementSpeed);
         ~Camera();
-        void Transform(const glm::vec3 &translation, const glm::vec3 &rotation, float deltaTime);
+        void Translate(const glm::vec3 &translation);
+        void Rotate(const glm::vec3 &axis, float angle);
         void UpdateCameraVectors();
+        void LookAt(const glm::vec3 &target);
         glm::mat4 GetViewMatrix() const;
         glm::mat4 GetProjectionMatrix() const;
         glm::vec3 GetPosition() const;

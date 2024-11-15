@@ -1,5 +1,6 @@
 #ifndef RENDERER_HPP
 #define RENDERER_HPP
+#include "Core/Camera.hpp"
 #include "ECS/Entity.hpp"
 
 namespace Renderer {
@@ -7,7 +8,7 @@ namespace Renderer {
     {
     public:
         Renderer() = default;
-        void Draw(const ECS::Entity& entity, const ECS::Entity& cameraEntity, const ECS::Entity& lightEntity) const;
+        void Draw(const ECS::Entity& entity, const Core::Camera& camera, const ECS::Entity& lightEntity) const;
     };
 }
 

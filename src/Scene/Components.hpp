@@ -1,11 +1,14 @@
 #ifndef COMPONENTS_HPP
 #define COMPONENTS_HPP
 #include <glm/glm.hpp>
+#include <ranges>
 
 #include "Core/Camera.hpp"
 #include "Core/Mesh.hpp"
 #include "ECS/Component.hpp"
 #include "ECS/ScriptableEntity.hpp"
+#include "ECS/Entity.hpp"
+#include "Scene.hpp"
 
 namespace Scene {
     struct TransformComponent final : ECS::Component
@@ -82,6 +85,74 @@ namespace Scene {
         {
             InstantiateScript = []() { return static_cast<ECS::ScriptableEntity*>(new T()); };
             DestroyScript = [](ECS::ScriptableEntity* instance) { delete instance; };
+        }
+    };
+
+    struct CollisionComponent final : ECS::Component
+    {
+        CollisionComponent() = default;
+        CollisionComponent(const CollisionComponent&) = default;
+        ECS::Entity* CollisionDetection(ECS::Entity* entity)
+        {
+            auto scene = entity->GetScene();
+            auto& transform = entity->GetComponent<TransformComponent>().Transform;
+            auto& mesh = entity->GetComponent<MeshComponent>().Mesh;
+            auto entityBoundingBox = ComputeBoundingBox(mesh, transform);
+            auto entities = scene->GetEntities();
+            auto collidableEntities = entities | std::views::filter([](const ECS::Entity* entity) {
+                return entity->HasComponent<CollisionComponent>();
+            });
+            for (const auto& collidableEntity : collidableEntities)
+            {
+                if (collidableEntity == entity)
+                {
+                    continue;
+                }
+                auto& collidableTransform = collidableEntity->GetComponent<TransformComponent>().Transform;
+                auto& collidableMesh = collidableEntity->GetComponent<MeshComponent>().Mesh;
+
+                // Retrieve the bounding box of the other entity
+                auto collidableBoundingBox = ComputeBoundingBox(collidableMesh, collidableTransform);
+
+                // Check if the bounding boxes overlap
+                if (AreBoundingBoxesOverlapping(entityBoundingBox, collidableBoundingBox))
+                {
+                    return collidableEntity; // Return the first colliding entity
+                }
+            }
+
+            return nullptr;
+        }
+
+    private:
+        struct BoundingBox
+        {
+            glm::vec3 Min;
+            glm::vec3 Max;
+        };
+
+        BoundingBox ComputeBoundingBox(const Core::Mesh& mesh, const glm::mat4& transform)
+        {
+            auto vertices = mesh.GetVertices();
+
+            glm::vec3 minBounds = glm::vec3(std::numeric_limits<float>::max());
+            glm::vec3 maxBounds = glm::vec3(std::numeric_limits<float>::lowest());
+
+            for (const auto& vertex : vertices)
+            {
+                glm::vec3 worldPosition = glm::vec3(transform * glm::vec4(vertex.Position, 1.0f));
+                minBounds = glm::min(minBounds, worldPosition);
+                maxBounds = glm::max(maxBounds, worldPosition);
+            }
+
+            return BoundingBox{minBounds, maxBounds};
+        }
+
+        bool AreBoundingBoxesOverlapping(const BoundingBox& a, const BoundingBox& b)
+        {
+            return (a.Max.x >= b.Min.x && a.Min.x <= b.Max.x) &&
+                   (a.Max.y >= b.Min.y && a.Min.y <= b.Max.y) &&
+                   (a.Max.z >= b.Min.z && a.Min.z <= b.Max.z);
         }
     };
 }

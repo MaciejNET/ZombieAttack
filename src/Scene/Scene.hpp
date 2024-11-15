@@ -8,9 +8,16 @@
 #include "Renderer/Renderer.hpp"
 
 namespace Scene {
+    struct AABB
+    {
+        glm::vec3 Min;
+        glm::vec3 Max;
+    };
+
     class Scene
     {
     public:
+        std::vector<ECS::Entity*> GetEntities() const { return _entities; }
         void AddEntity(ECS::Entity* entity);
         void OnUpdate(float deltaTime);
         void RemoveEntity(ECS::Entity* entity);

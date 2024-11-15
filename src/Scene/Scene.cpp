@@ -13,11 +13,11 @@ namespace Scene {
 
     void Scene::OnUpdate(const float deltaTime)
     {
-        for (auto& entity : _entities)
+        for (const auto& entity : _entities)
         {
             if (entity->HasComponent<ScriptableComponent>())
             {
-                auto scriptableEntity = entity->GetComponent<ScriptableComponent>();
+                auto& scriptableEntity = entity->GetComponent<ScriptableComponent>();
                 if (!scriptableEntity.Instance)
                 {
                     scriptableEntity.Instance = scriptableEntity.InstantiateScript();
@@ -46,6 +46,8 @@ namespace Scene {
         });
 
         ECS::Entity* mainCamera = (mainCameraIt != cameras.end()) ? *mainCameraIt : nullptr;
+        ZA_ASSERT(mainCamera, "No primary camera found.");
+        auto& camera = mainCamera->GetComponent<CameraComponent>().Camera;
 
         auto lights = _entities | std::ranges::views::filter([](const ECS::Entity* entity) {
             return entity->HasComponent<LightComponent>();
@@ -55,7 +57,7 @@ namespace Scene {
 
         for (const auto& entity : _entities)
         {
-            _renderer.Draw(*entity, *mainCamera, *mainLight);
+            _renderer.Draw(*entity, camera, *mainLight);
         }
     }
 

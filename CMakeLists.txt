@@ -58,8 +58,8 @@ add_executable(ZombieAttack
         src/ECS/ScriptableEntity.hpp
         src/Game/Game.cpp
         src/Game/Game.hpp
-        src/Game/Components/CameraController.hpp
-        src/Game/Components/CameraController.cpp
+        src/Game/Components/PlayerController.cpp
+        src/Game/Components/PlayerController.hpp
 )
 
 if(APPLE)

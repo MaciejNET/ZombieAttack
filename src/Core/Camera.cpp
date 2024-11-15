@@ -19,22 +19,37 @@ namespace Core {
 
     Camera::~Camera() = default;
 
-    void Camera::Transform(const glm::vec3 &translation, const glm::vec3 &rotation, float deltaTime)
+    void Camera::Translate(const glm::vec3 &translation)
     {
-        _position += _front * translation.z * _movementSpeed * deltaTime;
-        _position += _right * translation.x * _movementSpeed * deltaTime;
-        _position += _up * translation.y * _movementSpeed * deltaTime;
+        _position += translation;
+        UpdateCameraVectors();
+    }
 
-        _yaw += rotation.y * _mouseSensitivity;
-        _pitch += rotation.x * _mouseSensitivity;
+    void Camera::Rotate(const glm::vec3 &axis, float angle)
+    {
+        _yaw += angle * axis.x;
+        _pitch += angle * axis.y;
 
         if (_pitch > 89.0f)
+        {
             _pitch = 89.0f;
+        }
         if (_pitch < -89.0f)
+        {
             _pitch = -89.0f;
+        }
 
         UpdateCameraVectors();
     }
+
+    void Camera::LookAt(const glm::vec3 &target)
+    {
+        _front = glm::normalize(target - _position);
+        _yaw = glm::degrees(atan2(_front.z, _front.x));
+        _pitch = glm::degrees(asin(_front.y));
+        UpdateCameraVectors();
+    }
+
 
     void Camera::UpdateCameraVectors()
     {
