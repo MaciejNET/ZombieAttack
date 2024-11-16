@@ -32,17 +32,17 @@ void PlayerController::OnUpdate(float deltaTime)
     double viewportWidth = Core::WindowManager::GetWidth();
     double viewportHeight = Core::WindowManager::GetHeight();
 
-    // Calculate mouse position relative to the center of the screen
     glm::vec2 mousePosRelativeToCenter(
         (mouseX - viewportWidth / 2.0) / (viewportWidth / 2.0),
-        -(mouseY - viewportHeight / 2.0) / (viewportHeight / 2.0) // Invert Y-axis
+        -(mouseY - viewportHeight / 2.0) / (viewportHeight / 2.0)
     );
 
-    // Calculate yaw angle (rotation around the Y-axis) using atan2
-    float yaw = atan2(-mousePosRelativeToCenter.x, mousePosRelativeToCenter.y);
+    glm::vec3 cameraFront = camera.GetFront();
+    float cameraYaw = atan2(cameraFront.z, cameraFront.x);
 
-    // Update the character's rotation
-    glm::vec3 playerPosition(transform[3]); // Extract current player position
+    float yaw = atan2(-mousePosRelativeToCenter.x, mousePosRelativeToCenter.y) + cameraYaw;
+
+    glm::vec3 playerPosition(transform[3]);
     glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), yaw, glm::vec3(0.0f, 1.0f, 0.0f));
     transform = glm::translate(glm::mat4(1.0f), playerPosition) * rotation;
 

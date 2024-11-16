@@ -15,7 +15,7 @@ void Game::Init()
 {
     // Create entities
     auto light = new ECS::Entity(&_scene);
-    light->AddComponent<Scene::LightComponent>(glm::vec4(1.0f), glm::vec3(5.0f), 1.0f);
+    light->AddComponent<Scene::LightComponent>(glm::vec4(1.0f), glm::vec3(0.0f, 10.0f, -5.0f), 1.0f);
     _scene.AddEntity(light);
 
     auto player = new ECS::Entity(&_scene);
@@ -51,8 +51,8 @@ void Game::Init()
     _scene.AddEntity(cube2);
 
     auto floor = new ECS::Entity(&_scene);
-    auto& transform = floor->AddComponent<Scene::TransformComponent>(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.6f, 0.0f)));
-    transform.Transform = glm::scale(transform.Transform, glm::vec3(10.0f, 0.1f, 10.0f));
+    auto& transform = floor->AddComponent<Scene::TransformComponent>(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.6f, -5.0f)));
+    transform.Transform = glm::scale(transform.Transform, glm::vec3(50.0f, 0.1f, 50.0f));
     floor->AddComponent<Scene::SpriteRendererComponent>(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
     auto floorShape = Core::BaseShapes::Cube();
     auto floorMesh = new Core::Mesh(floorShape.Vertices, floorShape.Indices);
