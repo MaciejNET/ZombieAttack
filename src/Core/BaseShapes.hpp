@@ -88,28 +88,43 @@ namespace Core {
 
         static Shape Sphere()
         {
-            // Simplified sphere with minimal vertices and indices for demonstration
-            return {
-                // Vertices
+            const int segments = 36;
+            const int rings = 18;
+            const float radius = 0.5f;
+
+            std::vector<Vertex> vertices;
+            std::vector<unsigned int> indices;
+
+            for (int i = 0; i <= rings; ++i)
+            {
+                for (int j = 0; j <= segments; ++j)
                 {
-                    // Positions                // Normals       // Colors
-                    {{ 0.0f,  0.0f,  1.0f}, {0.0f,  0.0f,  1.0f}},  // Top
-                    {{ 0.0f,  1.0f,  0.0f}, {0.0f,  1.0f,  0.0f}},  // Front
-                    {{ 1.0f,  0.0f,  0.0f}, {1.0f,  0.0f,  0.0f}},  // Right
-                    {{ 0.0f, -1.0f,  0.0f}, {0.0f, -1.0f,  0.0f}},  // Back
-                    {{-1.0f,  0.0f,  0.0f}, {-1.0f,  0.0f,  0.0f}},  // Left
-                    {{ 0.0f,  0.0f, -1.0f}, {0.0f,  0.0f, -1.0f}}   // Bottom
-                },
-                // Indices
-                {
-                    0, 1, 2, 2, 3, 0,         // Front face
-                    4, 5, 6, 6, 7, 4,         // Back face
-                    8, 9, 10, 10, 11, 8,      // Left face
-                    12, 13, 14, 14, 15, 12,   // Right face
-                    16, 17, 18, 18, 19, 16,   // Top face
-                    20, 21, 22, 22, 23, 20    // Bottom face
+                    float y = cos((M_PI / rings) * i);
+                    float x = cos((2.0f * M_PI / segments) * j) * sin((M_PI / rings) * i);
+                    float z = sin((2.0f * M_PI / segments) * j) * sin((M_PI / rings) * i);
+
+                    vertices.push_back({
+                        {radius * x, radius * y, radius * z},  // Position
+                        {x, y, z}                              // Normal
+                    });
                 }
-            };
+            }
+
+            for (int i = 0; i < rings; ++i)
+            {
+                for (int j = 0; j < segments; ++j)
+                {
+                    indices.push_back(i * (segments + 1) + j);
+                    indices.push_back((i + 1) * (segments + 1) + j);
+                    indices.push_back((i + 1) * (segments + 1) + j + 1);
+
+                    indices.push_back(i * (segments + 1) + j);
+                    indices.push_back((i + 1) * (segments + 1) + j + 1);
+                    indices.push_back(i * (segments + 1) + j + 1);
+                }
+            }
+
+            return {vertices, indices};
         }
     };
 }
