@@ -97,7 +97,7 @@ namespace Scene {
             auto scene = entity->GetScene();
             auto& transform = entity->GetComponent<TransformComponent>().Transform;
             auto& mesh = entity->GetComponent<MeshComponent>().Mesh;
-            auto entityBoundingBox = ComputeBoundingBox(mesh, transform);
+            auto entityBoundingBox = ComputeOrientedBoundingBox(mesh, transform);
             auto entities = scene->GetEntities();
             auto collidableEntities = entities | std::views::filter([](const ECS::Entity* entity) {
                 return entity->HasComponent<CollisionComponent>();
@@ -111,9 +111,9 @@ namespace Scene {
                 auto& collidableTransform = collidableEntity->GetComponent<TransformComponent>().Transform;
                 auto& collidableMesh = collidableEntity->GetComponent<MeshComponent>().Mesh;
 
-                auto collidableBoundingBox = ComputeBoundingBox(collidableMesh, collidableTransform);
+                auto collidableBoundingBox = ComputeOrientedBoundingBox(collidableMesh, collidableTransform);
 
-                if (AreBoundingBoxesOverlapping(entityBoundingBox, collidableBoundingBox))
+                if (AreOBBsOverlapping(entityBoundingBox, collidableBoundingBox))
                 {
                     return collidableEntity;
                 }
@@ -123,34 +123,112 @@ namespace Scene {
         }
 
     private:
-        struct BoundingBox
+        struct OrientedBoundingBox
         {
-            glm::vec3 Min;
-            glm::vec3 Max;
+            glm::vec3 Center;
+            glm::vec3 HalfExtents;
+            glm::mat3 Orientation;
         };
 
-        BoundingBox ComputeBoundingBox(const Core::Mesh& mesh, const glm::mat4& transform)
+        OrientedBoundingBox ComputeOrientedBoundingBox(const Core::Mesh& mesh, const glm::mat4& transform)
         {
-            auto vertices = mesh.GetVertices();
+            glm::mat3 rotationMatrix = glm::mat3(transform);
 
             glm::vec3 minBounds = glm::vec3(std::numeric_limits<float>::max());
             glm::vec3 maxBounds = glm::vec3(std::numeric_limits<float>::lowest());
 
-            for (const auto& vertex : vertices)
+            for (const auto& vertex : mesh.GetVertices())
             {
-                glm::vec3 worldPosition = glm::vec3(transform * glm::vec4(vertex.Position, 1.0f));
-                minBounds = glm::min(minBounds, worldPosition);
-                maxBounds = glm::max(maxBounds, worldPosition);
+                minBounds = glm::min(minBounds, vertex.Position);
+                maxBounds = glm::max(maxBounds, vertex.Position);
             }
 
-            return BoundingBox{minBounds, maxBounds};
+            glm::vec3 center = (minBounds + maxBounds) * 0.5f;
+            glm::vec3 halfExtents = (maxBounds - minBounds) * 0.5f;
+
+            return OrientedBoundingBox {
+                transform * glm::vec4(center, 1.0f),
+                halfExtents,
+                rotationMatrix
+            };
         }
 
-        bool AreBoundingBoxesOverlapping(const BoundingBox& a, const BoundingBox& b)
+        bool AreOBBsOverlapping(const OrientedBoundingBox& a, const OrientedBoundingBox& b) {
+            glm::vec3 axes[15];
+            int axisCount = 0;
+
+            for (int i = 0; i < 3; ++i) {
+                axes[axisCount++] = a.Orientation[i];
+                axes[axisCount++] = b.Orientation[i];
+            }
+
+            for (int i = 0; i < 3; ++i) {
+                for (int j = 0; j < 3; ++j) {
+                    axes[axisCount++] = glm::cross(a.Orientation[i], b.Orientation[j]);
+                }
+            }
+
+            for (int i = 0; i < axisCount; ++i) {
+                if (!IsOverlappingOnAxis(a, b, axes[i])) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        bool IsOverlappingOnAxis(const OrientedBoundingBox& a, const OrientedBoundingBox& b, const glm::vec3& axis)
         {
-            return (a.Max.x >= b.Min.x && a.Min.x <= b.Max.x) &&
-                   (a.Max.y >= b.Min.y && a.Min.y <= b.Max.y) &&
-                   (a.Max.z >= b.Min.z && a.Min.z <= b.Max.z);
+            float aMin, aMax, bMin, bMax;
+            ProjectOntoAxis(a, axis, aMin, aMax);
+            ProjectOntoAxis(b, axis, bMin, bMax);
+
+            return aMax >= bMin && bMax >= aMin;
+        }
+
+        void ProjectOntoAxis(const OrientedBoundingBox& obb, const glm::vec3& axis, float& min, float& max)
+        {
+            glm::vec3 corners[8] = {
+                obb.Center + obb.Orientation[0] * obb.HalfExtents.x +
+                             obb.Orientation[1] * obb.HalfExtents.y +
+                             obb.Orientation[2] * obb.HalfExtents.z,
+
+                obb.Center + obb.Orientation[0] * obb.HalfExtents.x +
+                             obb.Orientation[1] * obb.HalfExtents.y -
+                             obb.Orientation[2] * obb.HalfExtents.z,
+
+                obb.Center + obb.Orientation[0] * obb.HalfExtents.x -
+                             obb.Orientation[1] * obb.HalfExtents.y +
+                             obb.Orientation[2] * obb.HalfExtents.z,
+
+                obb.Center + obb.Orientation[0] * obb.HalfExtents.x -
+                             obb.Orientation[1] * obb.HalfExtents.y -
+                             obb.Orientation[2] * obb.HalfExtents.z,
+
+                obb.Center - obb.Orientation[0] * obb.HalfExtents.x +
+                             obb.Orientation[1] * obb.HalfExtents.y +
+                             obb.Orientation[2] * obb.HalfExtents.z,
+
+                obb.Center - obb.Orientation[0] * obb.HalfExtents.x +
+                             obb.Orientation[1] * obb.HalfExtents.y -
+                             obb.Orientation[2] * obb.HalfExtents.z,
+
+                obb.Center - obb.Orientation[0] * obb.HalfExtents.x -
+                             obb.Orientation[1] * obb.HalfExtents.y +
+                             obb.Orientation[2] * obb.HalfExtents.z,
+
+                obb.Center - obb.Orientation[0] * obb.HalfExtents.x -
+                             obb.Orientation[1] * obb.HalfExtents.y -
+                             obb.Orientation[2] * obb.HalfExtents.z
+            };
+
+            min = max = glm::dot(corners[0], axis);
+            for (int i = 1; i < 8; ++i)
+            {
+                float projection = glm::dot(corners[i], axis);
+                min = glm::min(min, projection);
+                max = glm::max(max, projection);
+            }
         }
     };
 }
