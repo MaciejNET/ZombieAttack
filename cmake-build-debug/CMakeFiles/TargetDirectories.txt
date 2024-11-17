@@ -1,3 +1,0 @@
-/Users/maciejderon/Projects/ZombieAttack/cmake-build-debug/CMakeFiles/ZombieAttack.dir
-/Users/maciejderon/Projects/ZombieAttack/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/maciejderon/Projects/ZombieAttack/cmake-build-debug/CMakeFiles/rebuild_cache.dir

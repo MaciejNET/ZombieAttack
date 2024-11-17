@@ -12,7 +12,7 @@
 void PlayerController::OnCreate()
 {
     auto& camera = GetComponent<Scene::CameraComponent>().Camera;
-    auto position = glm::vec3(-10.0f, 10.0f, 10.0f); // Adjusted position
+    auto position = glm::vec3(-10.0f, 10.0f, 10.0f);
     camera.Translate(position);
 
     auto& transform = GetComponent<Scene::TransformComponent>().Transform;
