@@ -60,6 +60,11 @@ add_executable(ZombieAttack
         src/Game/Game.hpp
         src/Game/Components/PlayerController.cpp
         src/Game/Components/PlayerController.hpp
+        src/Game/Components/ZombieController.cpp
+        src/Game/Components/ZombieController.hpp
+        src/Game/Components/BulletController.cpp
+        src/Game/Components/BulletController.hpp
+        src/ECS/Entity.cpp
 )
 
 if(APPLE)

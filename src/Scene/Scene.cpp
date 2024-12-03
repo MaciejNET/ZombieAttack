@@ -4,6 +4,7 @@
 #include <cassert>
 
 #include "Core/Macros.hpp"
+#include "Events/EventBus.hpp"
 
 namespace Scene {
     void Scene::AddEntity(ECS::Entity* entity)

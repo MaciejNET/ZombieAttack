@@ -68,6 +68,7 @@ namespace ECS {
         }
 
         Scene::Scene* GetScene() const { return _scene; }
+        void AddToScene();
     private:
         uuid_t _id{};
         std::unordered_map<std::type_index, std::unique_ptr<Component>> _components;

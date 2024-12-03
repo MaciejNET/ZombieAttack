@@ -74,6 +74,48 @@ namespace Scene {
         explicit MeshComponent(const Core::Mesh& mesh, const Core::Shader& shader) : Mesh(mesh), Shader(shader) {}
     };
 
+    struct PlayerComponent final : ECS::Component
+    {
+        PlayerComponent() = default;
+        PlayerComponent(const PlayerComponent&) = default;
+    };
+
+    struct ZombieComponent final : ECS::Component
+    {
+        ZombieComponent() = default;
+        ZombieComponent(const ZombieComponent&) = default;
+    };
+
+    struct DamageComponent final : ECS::Component
+    {
+        int Damage{10};
+
+        DamageComponent() = default;
+        DamageComponent(const DamageComponent&) = default;
+
+        explicit DamageComponent(const int damage) : Damage(damage) {}
+    };
+
+    struct DirectionComponent final : ECS::Component
+    {
+        glm::vec3 Direction{0.0f};
+
+        DirectionComponent() = default;
+        DirectionComponent(const DirectionComponent&) = default;
+
+        explicit DirectionComponent(const glm::vec3& direction) : Direction(direction) {}
+    };
+
+    struct HealthComponent final : ECS::Component
+    {
+        int Health{100};
+
+        HealthComponent() = default;
+        HealthComponent(const HealthComponent&) = default;
+
+        explicit HealthComponent(const int health) : Health(health) {}
+    };
+
     struct ScriptableComponent final : ECS::Component
     {
         ECS::ScriptableEntity* Instance{nullptr};

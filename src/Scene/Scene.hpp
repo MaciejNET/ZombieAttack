@@ -8,12 +8,6 @@
 #include "Renderer/Renderer.hpp"
 
 namespace Scene {
-    struct AABB
-    {
-        glm::vec3 Min;
-        glm::vec3 Max;
-    };
-
     class Scene
     {
     public:

@@ -5,6 +5,8 @@
 #include <GLFW/glfw3.h>
 #include <glm/ext/matrix_transform.hpp>
 
+#include "BulletController.hpp"
+#include "Core/BaseShapes.hpp"
 #include "Core/InputManager.hpp"
 #include "Core/WindowManager.hpp"
 #include "Scene/Components.hpp"
@@ -66,6 +68,27 @@ void PlayerController::OnUpdate(float deltaTime)
     {
         translation.x += playerSpeed;
     }
+    if (Core::InputManager::MouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
+    {
+        glm::vec4 mouseClipSpace(
+            (2.0f * mouseX) / viewportWidth - 1.0f,
+            1.0f - (2.0f * mouseY) / viewportHeight,
+            -1.0f,
+            1.0f
+        );
+
+        glm::mat4 invProjView = glm::inverse(camera.GetProjectionMatrix() * camera.GetViewMatrix());
+        glm::vec4 mouseWorldSpace = invProjView * mouseClipSpace;
+        mouseWorldSpace /= mouseWorldSpace.w;
+
+        glm::vec3 direction = glm::normalize(glm::vec3(mouseWorldSpace) - playerPosition);
+        direction.y = 0.0f; // Ignore the y component
+
+        glm::mat4 additionalRotation = glm::rotate(glm::mat4(1.0f), glm::radians(225.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        direction = glm::vec3(additionalRotation * glm::vec4(direction, 0.0f));
+
+        Shoot(direction);
+    }
 
     if (translation != glm::vec3(0.0f))
     {
@@ -81,4 +104,22 @@ void PlayerController::OnUpdate(float deltaTime)
     glm::vec3 cameraPosition = playerPosition + cameraOffset;
     camera.SetPosition(cameraPosition);
     camera.LookAt(playerPosition);
+}
+
+void PlayerController::Shoot(glm::vec3 direction)
+{
+    auto* scene = _entity->GetScene();
+    auto bullet = new ECS::Entity(scene);
+    auto& bulletTransform = bullet->AddComponent<Scene::TransformComponent>(GetComponent<Scene::TransformComponent>().Transform);
+    bulletTransform.Transform = glm::scale(bulletTransform.Transform, glm::vec3(0.3f));
+    bullet->AddComponent<Scene::SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+    auto bulletShape = Core::BaseShapes::Sphere();
+    auto bulletMesh = new Core::Mesh(bulletShape.Vertices, bulletShape.Indices);
+    auto bulletShader = new Core::Shader("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");
+    bullet->AddComponent<Scene::MeshComponent>(*bulletMesh, *bulletShader);
+    bullet->AddComponent<Scene::DirectionComponent>(direction);
+    bullet->AddComponent<Scene::ScriptableComponent>().Bind<BulletController>();
+    bullet->AddComponent<Scene::CollisionComponent>();
+    bullet->AddComponent<Scene::DamageComponent>();
+    bullet->AddToScene();
 }
