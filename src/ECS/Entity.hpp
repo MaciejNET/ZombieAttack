@@ -18,7 +18,8 @@ namespace ECS {
     class Entity
     {
     public:
-        explicit Entity(Scene::Scene* scene) : _scene(scene) { uuid_generate(_id); }
+        Entity() = default;
+        explicit Entity(uuid_t id, Scene::Scene* scene) : _scene(scene) { uuid_copy(_id, id); }
         ~Entity() = default;
 
         const uuid_t& GetUUID() const { return _id; }

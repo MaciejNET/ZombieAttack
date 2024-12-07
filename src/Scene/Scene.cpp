@@ -7,22 +7,29 @@
 #include "Events/EventBus.hpp"
 
 namespace Scene {
-    void Scene::AddEntity(ECS::Entity* entity)
+    void Scene::AddEntity(const ECS::Entity& entity)
     {
         _entities.push_back(entity);
+    }
+
+    void Scene::AddComponent(const unsigned char (&)[16], const ECS::Component &component)
+    {
+
     }
 
     void Scene::OnUpdate(const float deltaTime)
     {
         for (const auto& entity : _entities)
         {
-            if (entity->HasComponent<ScriptableComponent>())
+            if (entity.HasComponent<ScriptableComponent>())
             {
                 auto& scriptableEntity = entity->GetComponent<ScriptableComponent>();
                 if (!scriptableEntity.Instance)
                 {
+                    uuid_t id{};
+                    uuid_copy(id, entity.GetUUID());
                     scriptableEntity.Instance = scriptableEntity.InstantiateScript();
-                    scriptableEntity.Instance->_entity = entity;
+                    scriptableEntity.Instance->_entity = ECS::Entity(id, this);
                     scriptableEntity.Instance->OnCreate();
                 }
 
@@ -62,8 +69,12 @@ namespace Scene {
         }
     }
 
-    void Scene::RemoveEntity(ECS::Entity* entity)
+    void Scene::RemoveEntity(uuid_t id)
     {
-        std::erase(_entities, entity);
+        auto entity = _entities | std::ranges::views::filter([id](const ECS::Entity& entity) {
+            return uuid_compare(entity.GetUUID(), id);
+        });
+
+        //remove entity
     }
 }
