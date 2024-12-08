@@ -12,14 +12,14 @@ namespace ECS {
         template<typename T>
         T& GetComponent()
         {
-            return _entity->GetComponent<T>();
+            return _entity.GetComponent<T>();
         }
 
     protected:
         virtual void OnCreate() {}
         virtual void OnDestroy() {}
         virtual void OnUpdate(float deltaTime) {}
-        Entity* _entity;
+        Entity _entity;
 
     private:
         friend class Scene::Scene;

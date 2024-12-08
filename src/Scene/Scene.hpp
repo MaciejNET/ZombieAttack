@@ -4,22 +4,26 @@
 #define SCENE_HPP
 #include <vector>
 
-#include "ECS/Entity.hpp"
-#include "Renderer/Renderer.hpp"
+#include "ECS/ComponentManager.h"
+
+namespace ECS {
+    class Entity;
+}
 
 namespace Scene {
     class Scene
     {
     public:
-        std::vector<ECS::Entity> GetEntities() const { return _entities; }
-        void AddEntity(const ECS::Entity& entity);
-        void AddComponent(const uuid_t& id, const ECS::Component& component);
+        ECS::Entity AddEntity();
+        std::vector<ECS::Entity> GetEntities();
+        ECS::ComponentManager& GetComponentManager() { return _componentManager; }
         void OnUpdate(float deltaTime);
-        void RemoveEntity(uuid_t id);
+        void RemoveEntity(int id);
     private:
-        std::vector<ECS::Entity> _entities;
-        std::unordered_map<uuid_t, std::unordered_map<std::type_index, std::unique_ptr<ECS::Component>>> _components;
-        Renderer::Renderer _renderer;
+        std::vector<int> _entities;
+        ECS::ComponentManager _componentManager;
+
+        friend class ECS::Entity;
     };
 }
 

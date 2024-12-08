@@ -8,7 +8,8 @@ namespace Renderer {
     {
     public:
         Renderer() = default;
-        void Draw(const ECS::Entity& entity, const Core::Camera& camera, const ECS::Entity& lightEntity) const;
+
+        static void Draw(const ECS::Entity& entity, const Core::Camera& camera, const ECS::Entity& lightEntity);
     };
 }
 

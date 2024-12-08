@@ -46,11 +46,14 @@ add_executable(ZombieAttack
         src/Events/MouseMovedEvent.hpp
         src/App.cpp
         src/App.hpp
-        src/ECS/Entity.hpp
-        src/ECS/Component.hpp
         src/Scene/Scene.cpp
         src/Scene/Scene.hpp
         src/Scene/Components.hpp
+        src/ECS/Entity.hpp
+        src/ECS/Component.hpp
+        src/ECS/Entity.cpp
+        src/ECS/ComponentManager.h
+        src/ECS/IdGenerator.h
         src/Renderer/Renderer.cpp
         src/Renderer/Renderer.hpp
         src/Core/BaseShapes.hpp
@@ -64,10 +67,6 @@ add_executable(ZombieAttack
         src/Game/Components/ZombieController.hpp
         src/Game/Components/BulletController.cpp
         src/Game/Components/BulletController.hpp
-        src/ECS/Entity.cpp
-        src/ECS/ComponentManager.h
-        src/ECS/ComponentManager.cpp
-        src/ECS/IdGenerator.h
 )
 
 if(APPLE)

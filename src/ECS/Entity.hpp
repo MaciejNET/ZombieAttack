@@ -3,78 +3,49 @@
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
 
-#include <unordered_map>
-#include <uuid/uuid.h>
-#include <typeindex>
-#include <vector>
-
-#include "Component.hpp"
-
-namespace Scene {
-    class Scene;
-}
+#include "Scene/Scene.hpp"
 
 namespace ECS {
     class Entity
     {
     public:
         Entity() = default;
-        explicit Entity(uuid_t id, Scene::Scene* scene) : _scene(scene) { uuid_copy(_id, id); }
+        Entity(int id, Scene::Scene* scene);
         ~Entity() = default;
 
-        const uuid_t& GetUUID() const { return _id; }
+        int GetId() const { return _id; }
 
         template<typename T, typename... Args>
         T& AddComponent(Args&&... args)
         {
-            T* component = new T(std::forward<Args>(args)...);
-            _components[typeid(T)] = std::unique_ptr<Component>(component);
-            return *component;
+            return _scene->_componentManager.AddComponent<T>(_id, std::forward<Args>(args)...);
         }
 
         template<typename T>
         T& GetComponent() const
         {
-            const auto it = _components.find(typeid(T));
-            if (it != _components.end())
-            {
-                return *dynamic_cast<T*>(it->second.get());
-            }
-            throw std::runtime_error("Component not found");
-        }
-
-        std::vector<Component*> GetComponents() const
-        {
-            std::vector<Component*> components;
-            for (auto& [type, component] : _components)
-            {
-                if (Component* castedComponent = component.get())
-                {
-                    components.push_back(castedComponent);
-                }
-            }
-            return components;
+            return _scene->_componentManager.GetComponent<T>(_id);
         }
 
         template<typename T>
         bool HasComponent() const
         {
-            return _components.contains(typeid(T));
+            return _scene->_componentManager.HasComponent<T>(_id);
         }
 
         template<typename T>
-        void RemoveComponent()
+        void RemoveComponent() const
         {
-            _components.erase(typeid(T));
+            _scene->_componentManager.RemoveComponent<T>(_id);
         }
 
         Scene::Scene* GetScene() const { return _scene; }
-        void AddToScene();
+        void AddToScene() const;
+
     private:
-        uuid_t _id{};
-        std::unordered_map<std::type_index, std::unique_ptr<Component>> _components;
-        Scene::Scene* _scene;
+        int _id{-1};
+        Scene::Scene* _scene{nullptr};
     };
 }
 
-#endif //ENTITY_HPP
+#endif // ENTITY_HPP

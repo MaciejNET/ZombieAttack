@@ -94,7 +94,7 @@ void PlayerController::OnUpdate(float deltaTime)
     {
         auto oldTranslation = translation;
         transform = glm::translate(transform, translation);
-        if (collision.CollisionDetection(_entity))
+        if (collision.CollisionDetection(_entity).GetId() != -1)
         {
             transform = glm::translate(transform, -oldTranslation);
         }
@@ -108,18 +108,17 @@ void PlayerController::OnUpdate(float deltaTime)
 
 void PlayerController::Shoot(glm::vec3 direction)
 {
-    auto* scene = _entity->GetScene();
-    auto bullet = new ECS::Entity(scene);
-    auto& bulletTransform = bullet->AddComponent<Scene::TransformComponent>(GetComponent<Scene::TransformComponent>().Transform);
+    auto* scene = _entity.GetScene();
+    auto bullet = scene->AddEntity();
+    auto& bulletTransform = bullet.AddComponent<Scene::TransformComponent>(GetComponent<Scene::TransformComponent>().Transform);
     bulletTransform.Transform = glm::scale(bulletTransform.Transform, glm::vec3(0.3f));
-    bullet->AddComponent<Scene::SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+    bullet.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
     auto bulletShape = Core::BaseShapes::Sphere();
-    auto bulletMesh = new Core::Mesh(bulletShape.Vertices, bulletShape.Indices);
-    auto bulletShader = new Core::Shader("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");
-    bullet->AddComponent<Scene::MeshComponent>(*bulletMesh, *bulletShader);
-    bullet->AddComponent<Scene::DirectionComponent>(direction);
-    bullet->AddComponent<Scene::ScriptableComponent>().Bind<BulletController>();
-    bullet->AddComponent<Scene::CollisionComponent>();
-    bullet->AddComponent<Scene::DamageComponent>();
-    bullet->AddToScene();
+    auto bulletMesh = Core::Mesh(bulletShape.Vertices, bulletShape.Indices);
+    auto bulletShader = Core::Shader("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");
+    bullet.AddComponent<Scene::MeshComponent>(bulletMesh, bulletShader);
+    bullet.AddComponent<Scene::DirectionComponent>(direction);
+    bullet.AddComponent<Scene::ScriptableComponent>().Bind<BulletController>();
+    bullet.AddComponent<Scene::CollisionComponent>();
+    bullet.AddComponent<Scene::DamageComponent>();
 }

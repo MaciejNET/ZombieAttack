@@ -4,10 +4,10 @@
 
 #include "Core/Macros.hpp"
 #include "Scene/Components.hpp"
-#include "Scene/Scene.hpp"
+
 
 namespace Renderer {
-    void Renderer::Draw(const ECS::Entity& entity, const Core::Camera& camera, const ECS::Entity& lightEntity) const
+    void Renderer::Draw(const ECS::Entity& entity, const Core::Camera& camera, const ECS::Entity& lightEntity)
     {
         ZA_ASSERT(lightEntity.HasComponent<Scene::LightComponent>(), "Light entity must have a LightComponent");
 

@@ -6,16 +6,15 @@
 namespace ECS {
     class IdGenerator
     {
-    private:
-        static int _id;
-        static std::mutex _mutex;
-
     public:
         static int GetNextId()
         {
-            std::lock_guard<std::mutex> lock(_mutex);
+            std::lock_guard lock(_mutex);
             return ++_id;
         }
+    private:
+        static int _id;
+        static std::mutex _mutex;
     };
 
     int IdGenerator::_id = 0;
