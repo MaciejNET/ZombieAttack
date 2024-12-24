@@ -65,13 +65,14 @@ namespace Scene {
 
     struct MeshComponent final : ECS::Component
     {
-        Core::Mesh Mesh;
-        Core::Shader Shader;
+        std::shared_ptr<Core::Mesh> Mesh{nullptr};
+        std::shared_ptr<Core::Shader> Shader{nullptr};
 
         MeshComponent() = delete;
         MeshComponent(const MeshComponent&) = default;
 
-        explicit MeshComponent(const Core::Mesh& mesh, const Core::Shader& shader) : Mesh(mesh), Shader(shader) {}
+        explicit MeshComponent(const std::shared_ptr<Core::Mesh>& mesh, const std::shared_ptr<Core::Shader>& shader)
+            : Mesh(mesh), Shader(shader) {}
     };
 
     struct PlayerComponent final : ECS::Component
@@ -134,24 +135,25 @@ namespace Scene {
     {
         CollisionComponent() = default;
         CollisionComponent(const CollisionComponent&) = default;
-        ECS::Entity* CollisionDetection(ECS::Entity* entity)
+        ECS::Entity CollisionDetection(ECS::Entity entity)
         {
-            auto scene = entity->GetScene();
-            auto& transform = entity->GetComponent<TransformComponent>().Transform;
-            auto& mesh = entity->GetComponent<MeshComponent>().Mesh;
+            auto scene = entity.GetScene();
+            auto& transform = entity.GetComponent<TransformComponent>().Transform;
+            auto& mesh = entity.GetComponent<MeshComponent>().Mesh;
             auto entityBoundingBox = ComputeOrientedBoundingBox(mesh, transform);
             auto entities = scene->GetEntities();
-            auto collidableEntities = entities | std::views::filter([](const ECS::Entity* entity) {
-                return entity->HasComponent<CollisionComponent>();
+            auto collidableEntities = entities | std::views::filter([scene](const ECS::Entity& entity) {
+                return scene->GetComponentManager().HasComponent<CollisionComponent>(entity.GetId());
             });
+
             for (const auto& collidableEntity : collidableEntities)
             {
-                if (collidableEntity == entity)
+                if (collidableEntity.GetId() == entity.GetId())
                 {
                     continue;
                 }
-                auto& collidableTransform = collidableEntity->GetComponent<TransformComponent>().Transform;
-                auto& collidableMesh = collidableEntity->GetComponent<MeshComponent>().Mesh;
+                auto& collidableTransform = collidableEntity.GetComponent<TransformComponent>().Transform;
+                auto& collidableMesh = collidableEntity.GetComponent<MeshComponent>().Mesh;
 
                 auto collidableBoundingBox = ComputeOrientedBoundingBox(collidableMesh, collidableTransform);
 
@@ -161,7 +163,7 @@ namespace Scene {
                 }
             }
 
-            return nullptr;
+            return {-1, nullptr};
         }
 
     private:
@@ -172,14 +174,14 @@ namespace Scene {
             glm::mat3 Orientation;
         };
 
-        OrientedBoundingBox ComputeOrientedBoundingBox(const Core::Mesh& mesh, const glm::mat4& transform)
+        OrientedBoundingBox ComputeOrientedBoundingBox(std::shared_ptr<Core::Mesh> mesh, const glm::mat4& transform)
         {
             glm::mat3 rotationMatrix = glm::mat3(transform);
 
             glm::vec3 minBounds = glm::vec3(std::numeric_limits<float>::max());
             glm::vec3 maxBounds = glm::vec3(std::numeric_limits<float>::lowest());
 
-            for (const auto& vertex : mesh.GetVertices())
+            for (const auto& vertex : mesh->GetVertices())
             {
                 minBounds = glm::min(minBounds, vertex.Position);
                 maxBounds = glm::max(maxBounds, vertex.Position);

@@ -80,6 +80,9 @@ namespace Core {
             glGetProgramInfoLog(_id, 512, nullptr, infoLog);
             std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
         }
+
+        glDeleteShader(vertex);
+        glDeleteShader(fragment);
     }
 
     Shader::~Shader()
@@ -89,7 +92,12 @@ namespace Core {
 
     void Shader::Use() const
     {
-        glUseProgram(_id);
+        if (glIsProgram(_id) == GL_FALSE)
+        {
+            std::cerr << "ERROR::SHADER::USE::PROGRAM_NOT_CREATED" << std::endl;
+            return;
+        }
+        GL_CHECK(glUseProgram(_id));
     }
 
     void Shader::SetVec3(const char* name, const glm::vec3& value) const

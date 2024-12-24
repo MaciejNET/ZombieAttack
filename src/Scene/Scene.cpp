@@ -4,21 +4,37 @@
 #include <cassert>
 
 #include "Core/Macros.hpp"
+#include "ECS/IdGenerator.h"
 #include "Events/EventBus.hpp"
+#include "ECS/Entity.hpp"
+#include "Renderer/Renderer.hpp"
 
 namespace Scene {
-    void Scene::AddEntity(ECS::Entity* entity)
+    ECS::Entity Scene::AddEntity()
     {
-        _entities.push_back(entity);
+        auto id = ECS::IdGenerator::GetNextId();
+        _entities.push_back(id);
+        return {id, this};
+    }
+
+    std::vector<ECS::Entity> Scene::GetEntities()
+    {
+        std::vector<ECS::Entity> entities;
+        for (const auto& entityId : _entities)
+        {
+            entities.emplace_back(entityId, this);
+        }
+        return entities;
     }
 
     void Scene::OnUpdate(const float deltaTime)
     {
-        for (const auto& entity : _entities)
+        for (const auto& entityId : _entities)
         {
-            if (entity->HasComponent<ScriptableComponent>())
+            ECS::Entity entity(entityId, this);
+            if (entity.HasComponent<ScriptableComponent>())
             {
-                auto& scriptableEntity = entity->GetComponent<ScriptableComponent>();
+                auto& scriptableEntity = entity.GetComponent<ScriptableComponent>();
                 if (!scriptableEntity.Instance)
                 {
                     scriptableEntity.Instance = scriptableEntity.InstantiateScript();
@@ -30,40 +46,47 @@ namespace Scene {
             }
         }
 
-        auto cameras = _entities | std::ranges::views::filter([](const ECS::Entity* entity) {
-            return entity->HasComponent<CameraComponent>();
+        auto cameras = _entities | std::ranges::views::filter([this](const int entityId) {
+            return _componentManager.HasComponent<CameraComponent>(entityId);
         });
 
-        ZA_ASSERT(std::ranges::any_of(cameras, [](const ECS::Entity* entity) {
-            return entity->GetComponent<CameraComponent>().Primary;
+        ZA_ASSERT(std::ranges::any_of(cameras, [this](const int entityId) {
+            return _componentManager.GetComponent<CameraComponent>(entityId).Primary;
         }), "No primary camera found.");
 
-        ZA_ASSERT(std::ranges::count_if(cameras, [](const ECS::Entity* entity) {
-            return entity->GetComponent<CameraComponent>().Primary;
+        ZA_ASSERT(std::ranges::count_if(cameras, [this](const int entityId) {
+            return _componentManager.GetComponent<CameraComponent>(entityId).Primary;
         }) == 1, "More than one primary camera found.");
 
-        auto mainCameraIt = std::ranges::find_if(cameras, [](const ECS::Entity* entity) {
-            return entity->GetComponent<CameraComponent>().Primary;
+        auto mainCameraIt = std::ranges::find_if(cameras, [this](const int entityId) {
+            return _componentManager.GetComponent<CameraComponent>(entityId).Primary;
         });
 
-        ECS::Entity* mainCamera = (mainCameraIt != cameras.end()) ? *mainCameraIt : nullptr;
+        const ECS::Entity* mainCamera = (mainCameraIt != cameras.end()) ? new ECS::Entity(*mainCameraIt, this) : nullptr;
         ZA_ASSERT(mainCamera, "No primary camera found.");
-        auto& camera = mainCamera->GetComponent<CameraComponent>().Camera;
+        const auto& camera = mainCamera->GetComponent<CameraComponent>().Camera;
 
-        auto lights = _entities | std::ranges::views::filter([](const ECS::Entity* entity) {
-            return entity->HasComponent<LightComponent>();
+        const auto firstLightIt = std::ranges::find_if(_entities, [this](const int entityId) {
+            return _componentManager.HasComponent<LightComponent>(entityId);
         });
 
-        const auto mainLight = lights.front();
-
-        for (const auto& entity : _entities)
+        if (firstLightIt == std::ranges::end(_entities))
         {
-            _renderer.Draw(*entity, camera, *mainLight);
+            throw std::runtime_error("No light found.");
+        }
+
+        int firstLight = *firstLightIt;
+        const ECS::Entity mainLight(firstLight, this);
+        for (const auto& entityId : _entities)
+        {
+            ECS::Entity entity(entityId, this);
+            Renderer::Renderer::Draw(entity, camera, mainLight);
         }
     }
 
-    void Scene::RemoveEntity(ECS::Entity* entity)
+    void Scene::RemoveEntity(const int id)
     {
-        std::erase(_entities, entity);
+        std::erase(_entities, id);
+        _componentManager.RemoveAllComponents(id);
     }
 }

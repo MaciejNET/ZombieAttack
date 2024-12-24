@@ -1,6 +1,5 @@
 #include "BulletController.hpp"
 
-#include <iostream>
 #include <glm/ext/matrix_transform.hpp>
 
 #include "Scene/Components.hpp"
@@ -24,28 +23,29 @@ void BulletController::OnUpdate(float deltaTime)
     float distanceTraveled = glm::distance(_initialPosition, currentPosition);
     if (distanceTraveled > _maxDistance)
     {
-        auto scene = _entity->GetScene();
-        scene->RemoveEntity(_entity);
+        auto scene = _entity.GetScene();
+        scene->RemoveEntity(_entity.GetId());
         return;
     }
 
-    if (const auto& entity = collision.CollisionDetection(_entity))
+    const auto& entity = collision.CollisionDetection(_entity);
+    if (entity.GetId() != -1)
     {
-        auto scene = _entity->GetScene();
-        if (entity->HasComponent<Scene::ZombieComponent>())
+        auto scene = _entity.GetScene();
+        if (entity.HasComponent<Scene::ZombieComponent>())
         {
-            auto& zombieHealth = entity->GetComponent<Scene::HealthComponent>();
-            auto& damage = _entity->GetComponent<Scene::DamageComponent>().Damage;
+            auto& zombieHealth = entity.GetComponent<Scene::HealthComponent>();
+            auto& damage = _entity.GetComponent<Scene::DamageComponent>().Damage;
             zombieHealth.Health -= damage;
             if (zombieHealth.Health <= 0)
             {
-                scene->RemoveEntity(entity);
+                scene->RemoveEntity(entity.GetId());
             }
         }
-        if (entity->HasComponent<Scene::PlayerComponent>())
+        if (entity.HasComponent<Scene::PlayerComponent>())
         {
             return;
         }
-        scene->RemoveEntity(_entity);
+        scene->RemoveEntity(_entity.GetId());
     }
 }

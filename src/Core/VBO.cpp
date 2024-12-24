@@ -1,5 +1,7 @@
 #include "VBO.hpp"
 
+#include "Macros.hpp"
+
 namespace Core {
     VBO::VBO(const std::vector<Vertex> &vertices)
     {
