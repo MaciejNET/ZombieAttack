@@ -97,7 +97,7 @@ namespace Core {
             std::cerr << "ERROR::SHADER::USE::PROGRAM_NOT_CREATED" << std::endl;
             return;
         }
-        glUseProgram(_id);
+        GL_CHECK(glUseProgram(_id));
     }
 
     void Shader::SetVec3(const char* name, const glm::vec3& value) const

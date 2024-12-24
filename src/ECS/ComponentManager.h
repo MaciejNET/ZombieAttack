@@ -3,52 +3,66 @@
 #define ZOMBIEATTACK_COMPONENTMANAGER_H
 
 #include <unordered_map>
+#include <vector>
 #include <typeindex>
 #include <typeinfo>
 #include <stdexcept>
+#include <memory>
 #include "Component.hpp"
 
 namespace ECS {
     class ComponentManager {
     public:
         template<typename T, typename... Args>
-        T& AddComponent(const int entityId, Args&&... args) {
+        T& AddComponent(const int entityId, Args&&... args)
+        {
             static_assert(std::is_base_of<Component, T>::value, "T must be derived from Component");
-            T component(std::forward<Args>(args)...);
-            _components[entityId].emplace(typeid(T), std::make_unique<T>(std::move(component)));
-            return dynamic_cast<T&>(*_components[entityId][typeid(T)]);
-        }
-
-        template<typename T>
-        void RemoveComponent(const int entityId) {
-            _components[entityId].erase(typeid(T));
-        }
-
-        void RemoveAllComponents(const int entityId) {
-            _components.erase(entityId);
-        }
-
-        template<typename T>
-        bool HasComponent(const int entityId) const {
-            if (const auto entityIt = _components.find(entityId); entityIt != _components.end()) {
-                return entityIt->second.contains(typeid(T));
+            auto& components = _components[typeid(T)];
+            if (entityId >= components.size()) {
+                components.resize(entityId + 1);
             }
-            return false;
+            components[entityId] = std::make_unique<T>(std::forward<Args>(args)...);
+            return *static_cast<T*>(components[entityId].get());
         }
 
         template<typename T>
-        T& GetComponent(const int entityId) {
-            if (const auto entityIt = _components.find(entityId); entityIt != _components.end()) {
-                if (const auto componentIt = entityIt->second.find(typeid(T)); componentIt != entityIt->second.end()) {
-                    return dynamic_cast<T&>(*(componentIt->second));
+        void RemoveComponent(const int entityId)
+        {
+            auto& components = _components[typeid(T)];
+            if (entityId < components.size()) {
+                components[entityId].reset();
+            }
+        }
+
+        void RemoveAllComponents(const int entityId)
+        {
+            for (auto& [type, components] : _components) {
+                if (entityId < components.size()) {
+                    components[entityId].reset();
                 }
             }
-            throw std::runtime_error("Component not found");
+        }
+
+        template<typename T>
+        bool HasComponent(const int entityId) const
+        {
+            const auto& components = _components.at(typeid(T));
+            return entityId < components.size() && components[entityId] != nullptr;
+        }
+
+        template<typename T>
+        T& GetComponent(const int entityId)
+        {
+            auto& components = _components.at(typeid(T));
+            if (entityId >= components.size() || !components[entityId]) {
+                throw std::runtime_error("Component not found");
+            }
+            return *static_cast<T*>(components[entityId].get());
         }
 
     private:
-        std::unordered_map<int, std::unordered_map<std::type_index, std::unique_ptr<Component>>> _components;
+        std::unordered_map<std::type_index, std::vector<std::unique_ptr<Component>>> _components;
     };
 } // namespace ECS
 
-#endif // ZOMBIEATTACK_COMPONENTMANAGER_Hsa
+#endif // ZOMBIEATTACK_COMPONENTMANAGER_H

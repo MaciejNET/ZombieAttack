@@ -114,8 +114,8 @@ void PlayerController::Shoot(glm::vec3 direction)
     bulletTransform.Transform = glm::scale(bulletTransform.Transform, glm::vec3(0.3f));
     bullet.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
     auto bulletShape = Core::BaseShapes::Sphere();
-    auto bulletMesh = Core::Mesh(bulletShape.Vertices, bulletShape.Indices);
-    auto bulletShader = Core::Shader("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");
+    auto bulletMesh = std::make_shared<Core::Mesh>(bulletShape.Vertices, bulletShape.Indices);
+    auto bulletShader = std::make_shared<Core::Shader>("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");
     bullet.AddComponent<Scene::MeshComponent>(bulletMesh, bulletShader);
     bullet.AddComponent<Scene::DirectionComponent>(direction);
     bullet.AddComponent<Scene::ScriptableComponent>().Bind<BulletController>();

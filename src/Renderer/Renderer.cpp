@@ -29,7 +29,7 @@ namespace Renderer {
                 [&](const Core::Shader& shader) { shader.SetVec3("viewPos", camera.GetPosition()); }
             };
 
-            mesh.Mesh.Draw(mesh.Shader, setFunctions);
+            mesh.Mesh->Draw(*mesh.Shader, setFunctions);
         }
     }
 }
