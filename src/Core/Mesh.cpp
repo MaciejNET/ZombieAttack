@@ -4,7 +4,7 @@
 
 namespace Core {
     Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices)
-        : _vao(), _vbo(_vertices), _ebo(_indices), _vertices(std::move(vertices)), _indices(std::move(indices))
+        : _vertices(std::move(vertices)), _indices(std::move(indices)), _vao(), _vbo(_vertices), _ebo(_indices)
     {
          _vao.Bind();
          _vbo.Bind();

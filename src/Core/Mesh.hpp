@@ -20,11 +20,11 @@ namespace Core {
         std::vector<unsigned int> GetIndices() const { return _indices; }
 
     private:
+        std::vector<Vertex> _vertices;
+        std::vector<unsigned int> _indices;
         VAO _vao;
         VBO _vbo;
         EBO _ebo;
-        std::vector<Vertex> _vertices;
-        std::vector<unsigned int> _indices;
     };
 }
 
