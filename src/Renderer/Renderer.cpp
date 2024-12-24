@@ -12,11 +12,10 @@ namespace Renderer {
         ZA_ASSERT(lightEntity.HasComponent<Scene::LightComponent>(), "Light entity must have a LightComponent");
 
         if (entity.HasComponent<Scene::TransformComponent>() &&
-            entity.HasComponent<Scene::MeshComponent>() &&
+            (entity.HasComponent<Scene::MeshComponent>() || entity.HasComponent<Scene::ModelComponent>()) &&
             entity.HasComponent<Scene::SpriteRendererComponent>())
         {
             const auto& transform = entity.GetComponent<Scene::TransformComponent>();
-            const auto& mesh = entity.GetComponent<Scene::MeshComponent>();
             const auto& spriteRenderer = entity.GetComponent<Scene::SpriteRendererComponent>();
             const auto& light = lightEntity.GetComponent<Scene::LightComponent>();
             const std::vector<std::function<void(const Core::Shader&)>> setFunctions = {
@@ -29,7 +28,19 @@ namespace Renderer {
                 [&](const Core::Shader& shader) { shader.SetVec3("viewPos", camera.GetPosition()); }
             };
 
-            mesh.Mesh->Draw(*mesh.Shader, setFunctions);
+            if (entity.HasComponent<Scene::MeshComponent>())
+            {
+                const auto& mesh = entity.GetComponent<Scene::MeshComponent>();
+                mesh.Mesh->Draw(*mesh.Shader, setFunctions);
+                return;
+            }
+
+            if (entity.HasComponent<Scene::ModelComponent>())
+            {
+                const auto& model = entity.GetComponent<Scene::ModelComponent>();
+                model.Model->Draw(*model.Shader, setFunctions);
+                return;
+            }
         }
     }
 }

@@ -9,6 +9,7 @@
 #include "ECS/ScriptableEntity.hpp"
 #include "ECS/Entity.hpp"
 #include "Scene.hpp"
+#include "Core/Model.hpp"
 
 namespace Scene {
     struct TransformComponent final : ECS::Component
@@ -75,6 +76,17 @@ namespace Scene {
             : Mesh(mesh), Shader(shader) {}
     };
 
+    struct ModelComponent final : ECS::Component
+    {
+        std::shared_ptr<Core::Model> Model{nullptr};
+        std::shared_ptr<Core::Shader> Shader{nullptr};
+
+        ModelComponent() = delete;
+        ModelComponent(const ModelComponent&) = default;
+
+        explicit ModelComponent(const std::shared_ptr<Core::Model>& model, const std::shared_ptr<Core::Shader>& shader) : Model(model), Shader(shader) {}
+    };
+
     struct PlayerComponent final : ECS::Component
     {
         PlayerComponent() = default;
@@ -139,8 +151,19 @@ namespace Scene {
         {
             auto scene = entity.GetScene();
             auto& transform = entity.GetComponent<TransformComponent>().Transform;
-            auto& mesh = entity.GetComponent<MeshComponent>().Mesh;
-            auto entityBoundingBox = ComputeOrientedBoundingBox(mesh, transform);
+            std::vector<std::shared_ptr<Core::Mesh>> meshes;
+            if (entity.HasComponent<MeshComponent>())
+            {
+                meshes.push_back(entity.GetComponent<MeshComponent>().Mesh);
+            }
+            if (entity.HasComponent<ModelComponent>())
+            {
+                for (const auto& mesh : entity.GetComponent<ModelComponent>().Model->GetMeshes())
+                {
+                    meshes.push_back(mesh);
+                }
+            }
+            auto entityBoundingBox = ComputeOrientedBoundingBox(meshes, transform);
             auto entities = scene->GetEntities();
             auto collidableEntities = entities | std::views::filter([scene](const ECS::Entity& entity) {
                 return scene->GetComponentManager().HasComponent<CollisionComponent>(entity.GetId());
@@ -153,9 +176,20 @@ namespace Scene {
                     continue;
                 }
                 auto& collidableTransform = collidableEntity.GetComponent<TransformComponent>().Transform;
-                auto& collidableMesh = collidableEntity.GetComponent<MeshComponent>().Mesh;
+                std::vector<std::shared_ptr<Core::Mesh>> collidableMeshes;
+                if (collidableEntity.HasComponent<MeshComponent>())
+                {
+                    collidableMeshes.push_back(collidableEntity.GetComponent<MeshComponent>().Mesh);
+                }
+                if (collidableEntity.HasComponent<ModelComponent>())
+                {
+                    for (const auto& mesh : collidableEntity.GetComponent<ModelComponent>().Model->GetMeshes())
+                    {
+                        collidableMeshes.push_back(mesh);
+                    }
+                }
 
-                auto collidableBoundingBox = ComputeOrientedBoundingBox(collidableMesh, collidableTransform);
+                auto collidableBoundingBox = ComputeOrientedBoundingBox(collidableMeshes, collidableTransform);
 
                 if (AreOBBsOverlapping(entityBoundingBox, collidableBoundingBox))
                 {
@@ -174,17 +208,20 @@ namespace Scene {
             glm::mat3 Orientation;
         };
 
-        OrientedBoundingBox ComputeOrientedBoundingBox(std::shared_ptr<Core::Mesh> mesh, const glm::mat4& transform)
+        OrientedBoundingBox ComputeOrientedBoundingBox(std::vector<std::shared_ptr<Core::Mesh>> meshes, const glm::mat4& transform)
         {
             glm::mat3 rotationMatrix = glm::mat3(transform);
 
             glm::vec3 minBounds = glm::vec3(std::numeric_limits<float>::max());
             glm::vec3 maxBounds = glm::vec3(std::numeric_limits<float>::lowest());
 
-            for (const auto& vertex : mesh->GetVertices())
+            for (const auto& mesh : meshes)
             {
-                minBounds = glm::min(minBounds, vertex.Position);
-                maxBounds = glm::max(maxBounds, vertex.Position);
+                for (const auto& vertex : mesh->GetVertices())
+                {
+                    minBounds = glm::min(minBounds, vertex.Position);
+                    maxBounds = glm::max(maxBounds, vertex.Position);
+                }
             }
 
             glm::vec3 center = (minBounds + maxBounds) * 0.5f;
