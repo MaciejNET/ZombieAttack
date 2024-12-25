@@ -18,7 +18,8 @@ namespace ECS {
         {
             static_assert(std::is_base_of<Component, T>::value, "T must be derived from Component");
             auto& components = _components[typeid(T)];
-            if (entityId >= components.size()) {
+            if (entityId >= components.size())
+            {
                 components.resize(entityId + 1);
             }
             components[entityId] = std::make_unique<T>(std::forward<Args>(args)...);
@@ -29,15 +30,18 @@ namespace ECS {
         void RemoveComponent(const int entityId)
         {
             auto& components = _components[typeid(T)];
-            if (entityId < components.size()) {
+            if (entityId < components.size())
+            {
                 components[entityId].reset();
             }
         }
 
         void RemoveAllComponents(const int entityId)
         {
-            for (auto& [type, components] : _components) {
-                if (entityId < components.size()) {
+            for (auto& [type, components] : _components)
+            {
+                if (entityId < components.size())
+                {
                     components[entityId].reset();
                 }
             }
@@ -46,7 +50,12 @@ namespace ECS {
         template<typename T>
         bool HasComponent(const int entityId) const
         {
-            const auto& components = _components.at(typeid(T));
+            const auto it = _components.find(typeid(T));
+            if (it == _components.end())
+            {
+                return false;
+            }
+            const auto& components = it->second;
             return entityId < components.size() && components[entityId] != nullptr;
         }
 
@@ -54,7 +63,8 @@ namespace ECS {
         T& GetComponent(const int entityId)
         {
             auto& components = _components.at(typeid(T));
-            if (entityId >= components.size() || !components[entityId]) {
+            if (entityId >= components.size() || !components[entityId])
+            {
                 throw std::runtime_error("Component not found");
             }
             return *static_cast<T*>(components[entityId].get());

@@ -74,7 +74,7 @@ namespace Core {
 
     void InputManager::Update()
     {
-        auto window = WindowManager::GetWindow();
+        const auto window = WindowManager::GetWindow();
         for (int i = 0; i < 512; i++)
         {
             _prevKeys[i] = _keys[i];

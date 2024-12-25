@@ -26,8 +26,8 @@ void Game::Init()
     auto mesh = std::make_shared<Core::Mesh>(cubeShape.Vertices, cubeShape.Indices);
     auto model = std::make_shared<Core::Model>("../assets/player.gltf");
     auto shader = std::make_shared<Core::Shader>("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");
-    //player.AddComponent<Scene::MeshComponent>(mesh, shader);
-    player.AddComponent<Scene::ModelComponent>(model, shader);
+    player.AddComponent<Scene::MeshComponent>(mesh, shader);
+    //player.AddComponent<Scene::ModelComponent>(model, shader);
     player.AddComponent<Scene::ScriptableComponent>().Bind<PlayerController>();
     player.AddComponent<Scene::CollisionComponent>();
     player.AddComponent<Scene::HealthComponent>();
