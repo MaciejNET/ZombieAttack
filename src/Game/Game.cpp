@@ -20,7 +20,7 @@ void Game::Init()
 
     auto player = _scene.AddEntity();
     player.AddComponent<Scene::TransformComponent>(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f)));
-    player.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+    player.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 0.2f));
     player.AddComponent<Scene::CameraComponent>(Core::Camera());
     auto cubeShape = Core::BaseShapes::Cube();
     auto mesh = std::make_shared<Core::Mesh>(cubeShape.Vertices, cubeShape.Indices);

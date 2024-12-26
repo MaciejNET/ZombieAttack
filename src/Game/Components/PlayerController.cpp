@@ -25,6 +25,9 @@ void PlayerController::OnCreate()
 
 void PlayerController::OnUpdate(float deltaTime)
 {
+    static float shootCooldown = 0.0f;
+    const float shootInterval = 0.3f; // Adjust this value to control the shooting rate
+
     auto& camera = GetComponent<Scene::CameraComponent>().Camera;
     auto& transform = GetComponent<Scene::TransformComponent>().Transform;
     auto& collision = GetComponent<Scene::CollisionComponent>();
@@ -52,42 +55,52 @@ void PlayerController::OnUpdate(float deltaTime)
 
     const float playerSpeed = _speed * deltaTime;
 
-    if (Core::InputManager::KeyHeld(GLFW_KEY_W))
+    if (Core::InputManager::KeyPressed(GLFW_KEY_W))
     {
         translation.z -= playerSpeed;
     }
-    if (Core::InputManager::KeyHeld(GLFW_KEY_S))
+    if (Core::InputManager::KeyPressed(GLFW_KEY_S))
     {
         translation.z += playerSpeed;
     }
-    if (Core::InputManager::KeyHeld(GLFW_KEY_A))
+    if (Core::InputManager::KeyPressed(GLFW_KEY_A))
     {
         translation.x -= playerSpeed;
     }
-    if (Core::InputManager::KeyHeld(GLFW_KEY_D))
+    if (Core::InputManager::KeyPressed(GLFW_KEY_D))
     {
         translation.x += playerSpeed;
     }
+
     if (Core::InputManager::MouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
     {
-        glm::vec4 mouseClipSpace(
-            (2.0f * mouseX) / viewportWidth - 1.0f,
-            1.0f - (2.0f * mouseY) / viewportHeight,
-            -1.0f,
-            1.0f
-        );
+        shootCooldown -= deltaTime;
+        if (shootCooldown <= 0.0f)
+        {
+            glm::vec4 mouseClipSpace(
+                (2.0f * mouseX) / viewportWidth - 1.0f,
+                1.0f - (2.0f * mouseY) / viewportHeight,
+                -1.0f,
+                1.0f
+            );
 
-        glm::mat4 invProjView = glm::inverse(camera.GetProjectionMatrix() * camera.GetViewMatrix());
-        glm::vec4 mouseWorldSpace = invProjView * mouseClipSpace;
-        mouseWorldSpace /= mouseWorldSpace.w;
+            glm::mat4 invProjView = glm::inverse(camera.GetProjectionMatrix() * camera.GetViewMatrix());
+            glm::vec4 mouseWorldSpace = invProjView * mouseClipSpace;
+            mouseWorldSpace /= mouseWorldSpace.w;
 
-        glm::vec3 direction = glm::normalize(glm::vec3(mouseWorldSpace) - playerPosition);
-        direction.y = 0.0f; // Ignore the y component
+            glm::vec3 direction = glm::normalize(glm::vec3(mouseWorldSpace) - playerPosition);
+            direction.y = 0.0f; // Ignore the y component
 
-        glm::mat4 additionalRotation = glm::rotate(glm::mat4(1.0f), glm::radians(225.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        direction = glm::vec3(additionalRotation * glm::vec4(direction, 0.0f));
+            glm::mat4 additionalRotation = glm::rotate(glm::mat4(1.0f), glm::radians(225.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            direction = glm::vec3(additionalRotation * glm::vec4(direction, 0.0f));
 
-        Shoot(direction);
+            Shoot(direction);
+            shootCooldown = shootInterval;
+        }
+    }
+    else
+    {
+        shootCooldown = 0.0f;
     }
 
     if (translation != glm::vec3(0.0f))
@@ -111,6 +124,7 @@ void PlayerController::Shoot(glm::vec3 direction)
     auto* scene = _entity.GetScene();
     auto bullet = scene->AddEntity();
     auto& bulletTransform = bullet.AddComponent<Scene::TransformComponent>(GetComponent<Scene::TransformComponent>().Transform);
+    bulletTransform.Transform = glm::translate(bulletTransform.Transform, direction);
     bulletTransform.Transform = glm::scale(bulletTransform.Transform, glm::vec3(0.3f));
     bullet.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
     auto bulletShape = Core::BaseShapes::Sphere();

@@ -9,7 +9,6 @@ void BulletController::OnCreate()
     _initialPosition = GetComponent<Scene::TransformComponent>().Transform[3];
 }
 
-
 void BulletController::OnUpdate(float deltaTime)
 {
     auto& transform = GetComponent<Scene::TransformComponent>().Transform;
