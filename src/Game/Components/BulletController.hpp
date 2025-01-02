@@ -8,9 +8,9 @@ class BulletController final : public ECS::ScriptableEntity
 {
     void OnCreate() override;
     void OnUpdate(float deltaTime) override;
-    float _speed = 20.0f;
+    float _speed = 30.0f;
     glm::vec3 _initialPosition{};
-    float _maxDistance = 10.0f;
+    float _maxDistance = 25.0f;
     glm::vec3 _direction{};
 };
 

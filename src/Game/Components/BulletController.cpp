@@ -45,6 +45,10 @@ void BulletController::OnUpdate(float deltaTime)
         {
             return;
         }
+        if (entity.HasComponent<Scene::BulletComponent>())
+        {
+            return;
+        }
         scene->RemoveEntity(_entity.GetId());
     }
 }

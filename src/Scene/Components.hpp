@@ -99,6 +99,12 @@ namespace Scene {
         ZombieComponent(const ZombieComponent&) = default;
     };
 
+    struct BulletComponent final : ECS::Component
+    {
+        BulletComponent() = default;
+        BulletComponent(const BulletComponent&) = default;
+    };
+
     struct DamageComponent final : ECS::Component
     {
         int Damage{10};

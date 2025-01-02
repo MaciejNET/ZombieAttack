@@ -5,6 +5,11 @@
 #include "Components/PlayerController.hpp"
 #include "Components/ZombieController.hpp"
 #include "Core/BaseShapes.hpp"
+#include "Core/BaseShapes.hpp"
+#include "Core/BaseShapes.hpp"
+#include "Core/BaseShapes.hpp"
+#include "Core/BaseShapes.hpp"
+#include "GameObjects/EntityFactory.hpp"
 #include "Scene/Components.hpp"
 
 Game::Game()
@@ -20,7 +25,7 @@ void Game::Init()
 
     auto player = _scene.AddEntity();
     player.AddComponent<Scene::TransformComponent>(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f)));
-    player.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 0.2f));
+    player.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(0.8627f, 0.0784f, 0.2353f, 1.0f));
     player.AddComponent<Scene::CameraComponent>(Core::Camera());
     auto cubeShape = Core::BaseShapes::Cube();
     auto mesh = std::make_shared<Core::Mesh>(cubeShape.Vertices, cubeShape.Indices);
@@ -40,7 +45,7 @@ void Game::Init()
     zombie1.AddComponent<Scene::ZombieComponent>();
     zombie1.AddComponent<Scene::DamageComponent>();
     zombie1.AddComponent<Scene::TransformComponent>(glm::translate(glm::mat4(1.0f), glm::vec3(-5.0f, 0.0f, -5.0f)));
-    zombie1.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+    zombie1.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(0.1961f, 0.8039f, 0.1961f, 1.0f));
     auto cubeShape1 = Core::BaseShapes::Cube();
     auto mesh1 = std::make_shared<Core::Mesh>(cubeShape1.Vertices, cubeShape1.Indices);
     auto shader1 = std::make_shared<Core::Shader>("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");
@@ -54,7 +59,7 @@ void Game::Init()
     zombie2.AddComponent<Scene::HealthComponent>();
     zombie2.AddComponent<Scene::DamageComponent>();
     zombie2.AddComponent<Scene::TransformComponent>(glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 0.0f, -5.0f)));
-    zombie2.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+    zombie2.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(0.1961f, 0.8039f, 0.1961f, 1.0f));
     auto cubeShape2 = Core::BaseShapes::Cube();
     auto mesh2 = std::make_shared<Core::Mesh>(cubeShape2.Vertices, cubeShape2.Indices);
     auto shader2 = std::make_shared<Core::Shader>("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");

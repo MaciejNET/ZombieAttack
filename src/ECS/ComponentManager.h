@@ -16,7 +16,7 @@ namespace ECS {
         template<typename T, typename... Args>
         T& AddComponent(const int entityId, Args&&... args)
         {
-            static_assert(std::is_base_of<Component, T>::value, "T must be derived from Component");
+            static_assert(std::is_base_of_v<Component, T>, "T must be derived from Component");
             auto& components = _components[typeid(T)];
             if (entityId >= components.size())
             {
