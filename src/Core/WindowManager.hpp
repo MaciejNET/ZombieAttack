@@ -29,6 +29,7 @@ namespace Core {
         static void SetClearColor(float r, float g, float b, float a);
         static void TurnOnCursor();
         static void TurnOffCursor();
+        static void CloseWindow();
 
     private:
         static void FramebufferSizeCallback(GLFWwindow* window, int width, int height);

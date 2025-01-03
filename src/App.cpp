@@ -27,7 +27,7 @@ void App::Run()
 
         if (Core::InputManager::KeyPressed(GLFW_KEY_ESCAPE))
         {
-            glfwSetWindowShouldClose(Core::WindowManager::GetWindow(), true);
+            Core::WindowManager::CloseWindow();
         }
 
         if (Core::InputManager::KeyPressed(GLFW_KEY_F10))
@@ -51,6 +51,6 @@ void App::Run()
         _deltaTime = endFrame - startFrame;
 
         const auto fps = static_cast<int>(1.0f / _deltaTime);
-        glfwSetWindowTitle(Core::WindowManager::GetWindow(), ("OpenGL App | FPS: " + std::to_string(fps)).c_str());
+        Core::WindowManager::SetTitle(("OpenGL App - FPS: " + std::to_string(fps)).c_str());
     }
 }

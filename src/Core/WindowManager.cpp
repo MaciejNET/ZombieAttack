@@ -168,4 +168,10 @@ namespace Core {
 
         glfwSetCursorPos(window, xpos, ypos);
     }
+
+    void WindowManager::CloseWindow()
+    {
+        glfwSetWindowShouldClose(_window.get(), true);
+    }
+
 }
