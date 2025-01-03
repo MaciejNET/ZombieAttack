@@ -9,6 +9,7 @@
 #include "ECS/ScriptableEntity.hpp"
 #include "ECS/Entity.hpp"
 #include "Scene.hpp"
+#include "Collisions/OrientedBoundingBox.hpp"
 #include "Core/Model.hpp"
 
 namespace Scene {
@@ -151,12 +152,10 @@ namespace Scene {
 
     struct CollisionComponent final : ECS::Component
     {
-        CollisionComponent() = default;
-        CollisionComponent(const CollisionComponent&) = default;
-        ECS::Entity CollisionDetection(ECS::Entity entity)
+        CollisionComponent() = delete;
+        explicit CollisionComponent(const ECS::Entity entity)
         {
-            auto scene = entity.GetScene();
-            auto& transform = entity.GetComponent<TransformComponent>().Transform;
+            const auto& transform = entity.GetComponent<TransformComponent>().Transform;
             std::vector<std::shared_ptr<Core::Mesh>> meshes;
             if (entity.HasComponent<MeshComponent>())
             {
@@ -169,10 +168,35 @@ namespace Scene {
                     meshes.push_back(mesh);
                 }
             }
-            auto entityBoundingBox = ComputeOrientedBoundingBox(meshes, transform);
+            BoundingBox = Collisions::ComputeOrientedBoundingBox(meshes, transform);
+        }
+        CollisionComponent(const CollisionComponent&) = default;
+        Collisions::OrientedBoundingBox BoundingBox;
+
+        void UpdateBoundingBox(const ECS::Entity entity)
+        {
+            const auto& transform = entity.GetComponent<TransformComponent>().Transform;
+            std::vector<std::shared_ptr<Core::Mesh>> meshes;
+            if (entity.HasComponent<MeshComponent>())
+            {
+                meshes.push_back(entity.GetComponent<MeshComponent>().Mesh);
+            }
+            if (entity.HasComponent<ModelComponent>())
+            {
+                for (const auto& mesh : entity.GetComponent<ModelComponent>().Model->GetMeshes())
+                {
+                    meshes.push_back(mesh);
+                }
+            }
+            BoundingBox = Collisions::ComputeOrientedBoundingBox(meshes, transform);
+        }
+
+        ECS::Entity CollisionDetection(ECS::Entity entity)
+        {
+            auto scene = entity.GetScene();
             auto entities = scene->GetEntities();
-            auto collidableEntities = entities | std::views::filter([scene](const ECS::Entity& entity) {
-                return scene->GetComponentManager().HasComponent<CollisionComponent>(entity.GetId());
+            auto collidableEntities = entities | std::views::filter([scene](const ECS::Entity& e) {
+                return scene->GetComponentManager().HasComponent<CollisionComponent>(e.GetId());
             });
 
             for (const auto& collidableEntity : collidableEntities)
@@ -181,141 +205,15 @@ namespace Scene {
                 {
                     continue;
                 }
-                auto& collidableTransform = collidableEntity.GetComponent<TransformComponent>().Transform;
-                std::vector<std::shared_ptr<Core::Mesh>> collidableMeshes;
-                if (collidableEntity.HasComponent<MeshComponent>())
-                {
-                    collidableMeshes.push_back(collidableEntity.GetComponent<MeshComponent>().Mesh);
-                }
-                if (collidableEntity.HasComponent<ModelComponent>())
-                {
-                    for (const auto& mesh : collidableEntity.GetComponent<ModelComponent>().Model->GetMeshes())
-                    {
-                        collidableMeshes.push_back(mesh);
-                    }
-                }
+                auto collidableBoundingBox = collidableEntity.GetComponent<CollisionComponent>().BoundingBox;
 
-                auto collidableBoundingBox = ComputeOrientedBoundingBox(collidableMeshes, collidableTransform);
-
-                if (AreOBBsOverlapping(entityBoundingBox, collidableBoundingBox))
+                if (AreOBBsOverlapping(BoundingBox, collidableBoundingBox))
                 {
                     return collidableEntity;
                 }
             }
 
             return {-1, nullptr};
-        }
-
-    private:
-        struct OrientedBoundingBox
-        {
-            glm::vec3 Center;
-            glm::vec3 HalfExtents;
-            glm::mat3 Orientation;
-        };
-
-        OrientedBoundingBox ComputeOrientedBoundingBox(std::vector<std::shared_ptr<Core::Mesh>> meshes, const glm::mat4& transform)
-        {
-            glm::mat3 rotationMatrix = glm::mat3(transform);
-
-            glm::vec3 minBounds = glm::vec3(std::numeric_limits<float>::max());
-            glm::vec3 maxBounds = glm::vec3(std::numeric_limits<float>::lowest());
-
-            for (const auto& mesh : meshes)
-            {
-                for (const auto& vertex : mesh->GetVertices())
-                {
-                    minBounds = glm::min(minBounds, vertex.Position);
-                    maxBounds = glm::max(maxBounds, vertex.Position);
-                }
-            }
-
-            glm::vec3 center = (minBounds + maxBounds) * 0.5f;
-            glm::vec3 halfExtents = (maxBounds - minBounds) * 0.5f;
-
-            return OrientedBoundingBox {
-                transform * glm::vec4(center, 1.0f),
-                halfExtents,
-                rotationMatrix
-            };
-        }
-
-        bool AreOBBsOverlapping(const OrientedBoundingBox& a, const OrientedBoundingBox& b) {
-            glm::vec3 axes[15];
-            int axisCount = 0;
-
-            for (int i = 0; i < 3; ++i) {
-                axes[axisCount++] = a.Orientation[i];
-                axes[axisCount++] = b.Orientation[i];
-            }
-
-            for (int i = 0; i < 3; ++i) {
-                for (int j = 0; j < 3; ++j) {
-                    axes[axisCount++] = glm::cross(a.Orientation[i], b.Orientation[j]);
-                }
-            }
-
-            for (int i = 0; i < axisCount; ++i) {
-                if (!IsOverlappingOnAxis(a, b, axes[i])) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        bool IsOverlappingOnAxis(const OrientedBoundingBox& a, const OrientedBoundingBox& b, const glm::vec3& axis)
-        {
-            float aMin, aMax, bMin, bMax;
-            ProjectOntoAxis(a, axis, aMin, aMax);
-            ProjectOntoAxis(b, axis, bMin, bMax);
-
-            return aMax >= bMin && bMax >= aMin;
-        }
-
-        void ProjectOntoAxis(const OrientedBoundingBox& obb, const glm::vec3& axis, float& min, float& max)
-        {
-            glm::vec3 corners[8] = {
-                obb.Center + obb.Orientation[0] * obb.HalfExtents.x +
-                             obb.Orientation[1] * obb.HalfExtents.y +
-                             obb.Orientation[2] * obb.HalfExtents.z,
-
-                obb.Center + obb.Orientation[0] * obb.HalfExtents.x +
-                             obb.Orientation[1] * obb.HalfExtents.y -
-                             obb.Orientation[2] * obb.HalfExtents.z,
-
-                obb.Center + obb.Orientation[0] * obb.HalfExtents.x -
-                             obb.Orientation[1] * obb.HalfExtents.y +
-                             obb.Orientation[2] * obb.HalfExtents.z,
-
-                obb.Center + obb.Orientation[0] * obb.HalfExtents.x -
-                             obb.Orientation[1] * obb.HalfExtents.y -
-                             obb.Orientation[2] * obb.HalfExtents.z,
-
-                obb.Center - obb.Orientation[0] * obb.HalfExtents.x +
-                             obb.Orientation[1] * obb.HalfExtents.y +
-                             obb.Orientation[2] * obb.HalfExtents.z,
-
-                obb.Center - obb.Orientation[0] * obb.HalfExtents.x +
-                             obb.Orientation[1] * obb.HalfExtents.y -
-                             obb.Orientation[2] * obb.HalfExtents.z,
-
-                obb.Center - obb.Orientation[0] * obb.HalfExtents.x -
-                             obb.Orientation[1] * obb.HalfExtents.y +
-                             obb.Orientation[2] * obb.HalfExtents.z,
-
-                obb.Center - obb.Orientation[0] * obb.HalfExtents.x -
-                             obb.Orientation[1] * obb.HalfExtents.y -
-                             obb.Orientation[2] * obb.HalfExtents.z
-            };
-
-            min = max = glm::dot(corners[0], axis);
-            for (int i = 1; i < 8; ++i)
-            {
-                float projection = glm::dot(corners[i], axis);
-                min = glm::min(min, projection);
-                max = glm::max(max, projection);
-            }
         }
     };
 }

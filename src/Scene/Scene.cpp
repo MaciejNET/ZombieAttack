@@ -32,6 +32,10 @@ namespace Scene {
         for (const auto& entityId : _entities)
         {
             ECS::Entity entity(entityId, this);
+            if (entity.HasComponent<CollisionComponent>())
+            {
+                entity.GetComponent<CollisionComponent>().UpdateBoundingBox(entity);
+            }
             if (entity.HasComponent<ScriptableComponent>())
             {
                 auto& scriptableEntity = entity.GetComponent<ScriptableComponent>();

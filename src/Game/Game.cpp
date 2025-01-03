@@ -34,7 +34,7 @@ void Game::Init()
     player.AddComponent<Scene::MeshComponent>(mesh, shader);
     //player.AddComponent<Scene::ModelComponent>(model, shader);
     player.AddComponent<Scene::ScriptableComponent>().Bind<PlayerController>();
-    player.AddComponent<Scene::CollisionComponent>();
+    player.AddComponent<Scene::CollisionComponent>(player);
     player.AddComponent<Scene::HealthComponent>();
     player.AddComponent<Scene::PlayerComponent>();
 
@@ -50,7 +50,7 @@ void Game::Init()
     auto mesh1 = std::make_shared<Core::Mesh>(cubeShape1.Vertices, cubeShape1.Indices);
     auto shader1 = std::make_shared<Core::Shader>("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");
     zombie1.AddComponent<Scene::MeshComponent>(mesh1, shader1);
-    zombie1.AddComponent<Scene::CollisionComponent>();
+    zombie1.AddComponent<Scene::CollisionComponent>(zombie1);
 
     auto zombie2 = _scene.AddEntity();
     zombie2.AddComponent<Scene::ScriptableComponent>().Bind<ZombieController>();
@@ -64,7 +64,7 @@ void Game::Init()
     auto mesh2 = std::make_shared<Core::Mesh>(cubeShape2.Vertices, cubeShape2.Indices);
     auto shader2 = std::make_shared<Core::Shader>("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");
     zombie2.AddComponent<Scene::MeshComponent>(mesh2, shader2);
-    zombie2.AddComponent<Scene::CollisionComponent>();
+    zombie2.AddComponent<Scene::CollisionComponent>(zombie2);
 
     auto floor = _scene.AddEntity();
     auto& transform = floor.AddComponent<Scene::TransformComponent>(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.6f, -5.0f)));

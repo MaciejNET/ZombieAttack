@@ -2,6 +2,7 @@
 #define ENTITYFACTORY_HPP
 #include <glm/glm.hpp>
 
+#include "Scene/Components.hpp"
 #include "ECS/Entity.hpp"
 
 class EntityFactory

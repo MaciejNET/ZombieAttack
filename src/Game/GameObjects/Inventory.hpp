@@ -71,7 +71,6 @@ public:
         } while (!_items.contains(*it));
 
         _selectedItem = *it;
-        std::cout << "Selected item: " << _selectedItem.name() << std::endl;
     }
 
 private:
