@@ -50,7 +50,7 @@ void App::Run()
         const auto endFrame = static_cast<float>(glfwGetTime());
         _deltaTime = endFrame - startFrame;
 
-        auto fps = 1.0f / _deltaTime;
+        const auto fps = static_cast<int>(1.0f / _deltaTime);
         glfwSetWindowTitle(Core::WindowManager::GetWindow(), ("OpenGL App | FPS: " + std::to_string(fps)).c_str());
     }
 }

@@ -155,20 +155,7 @@ namespace Scene {
         CollisionComponent() = delete;
         explicit CollisionComponent(const ECS::Entity entity)
         {
-            const auto& transform = entity.GetComponent<TransformComponent>().Transform;
-            std::vector<std::shared_ptr<Core::Mesh>> meshes;
-            if (entity.HasComponent<MeshComponent>())
-            {
-                meshes.push_back(entity.GetComponent<MeshComponent>().Mesh);
-            }
-            if (entity.HasComponent<ModelComponent>())
-            {
-                for (const auto& mesh : entity.GetComponent<ModelComponent>().Model->GetMeshes())
-                {
-                    meshes.push_back(mesh);
-                }
-            }
-            BoundingBox = Collisions::ComputeOrientedBoundingBox(meshes, transform);
+            UpdateBoundingBox(entity);
         }
         CollisionComponent(const CollisionComponent&) = default;
         Collisions::OrientedBoundingBox BoundingBox;
