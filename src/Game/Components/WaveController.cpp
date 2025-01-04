@@ -78,9 +78,10 @@ void WaveController::GenerateWave(Scene::WaveComponent& waveComponent) const
 void WaveController::SpawnZombie(const int count) const
 {
     const auto scene = _entity.GetScene();
+    const float distribution = 25.0f + static_cast<float>(count) / 10.0f;
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution dis(-25.0f, 25.0f);
+    std::uniform_real_distribution dis(-distribution, distribution);
 
     for (int i = 0; i < count; i++)
     {
