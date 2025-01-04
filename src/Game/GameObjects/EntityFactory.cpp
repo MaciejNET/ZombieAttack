@@ -1,6 +1,7 @@
 #include "EntityFactory.hpp"
 
 #include <iostream>
+#include <glm/ext/matrix_transform.hpp>
 
 #include "Core/BaseShapes.hpp"
 #include "Game/Components/BulletController.hpp"
@@ -38,7 +39,7 @@ ECS::Entity EntityFactory::CreateZombie(Scene::Scene& scene, glm::mat4 transform
     zombie.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(0.1961f, 0.8039f, 0.1961f, 1.0f));
     auto cubeShape = Core::BaseShapes::Cube();
     auto mesh = std::make_shared<Core::Mesh>(cubeShape.Vertices, cubeShape.Indices);
-    auto shader = std::make_shared<Core::Shader>("../../src/Core/BaseShader.vert", "../../src/Core/BaseShader.frag");
+    auto shader = std::make_shared<Core::Shader>("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");
     zombie.AddComponent<Scene::MeshComponent>(mesh, shader);
     zombie.AddComponent<Scene::CollisionComponent>(zombie);
 
@@ -58,6 +59,7 @@ ECS::Entity EntityFactory::CreateBullet(Scene::Scene& scene, glm::mat4 transform
     bullet.AddComponent<Scene::ScriptableComponent>().Bind<BulletController>();
     bullet.AddComponent<Scene::CollisionComponent>(bullet);
     bullet.AddComponent<Scene::DamageComponent>();
+    bullet.AddComponent<Scene::BulletComponent>();
 
     return bullet;
 }
@@ -65,13 +67,16 @@ ECS::Entity EntityFactory::CreateBullet(Scene::Scene& scene, glm::mat4 transform
 ECS::Entity EntityFactory::CreateCoin(Scene::Scene& scene, glm::mat4 transform)
 {
     auto coin = scene.AddEntity();
-    coin.AddComponent<Scene::TransformComponent>(transform);
-    coin.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
+    auto& coinTransform = coin.AddComponent<Scene::TransformComponent>(transform);
+    coinTransform.Transform = glm::scale(coinTransform.Transform, glm::vec3(0.5f));
+    coinTransform.Transform = glm::translate(coinTransform.Transform, glm::vec3(0.0f, 0.5f, 0.0f));
+    coin.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(1.0, 0.843, 0.0, 1.0));
     auto coinShape = Core::BaseShapes::Sphere();
     auto coinMesh = std::make_shared<Core::Mesh>(coinShape.Vertices, coinShape.Indices);
-    auto coinShader = std::make_shared<Core::Shader>("../../src/Core/BaseShader.vert", "../../src/Core/BaseShader.frag");
+    auto coinShader = std::make_shared<Core::Shader>("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");
     coin.AddComponent<Scene::MeshComponent>(coinMesh, coinShader);
     coin.AddComponent<Scene::CollisionComponent>(coin);
+    coin.AddComponent<Scene::CoinComponent>();
 
     return coin;
 }
@@ -83,9 +88,10 @@ ECS::Entity EntityFactory::CreateTrap(Scene::Scene& scene, glm::mat4 transform)
     trap.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
     auto trapShape = Core::BaseShapes::Cube();
     auto trapMesh = std::make_shared<Core::Mesh>(trapShape.Vertices, trapShape.Indices);
-    auto trapShader = std::make_shared<Core::Shader>("../../src/Core/BaseShader.vert", "../../src/Core/BaseShader.frag");
+    auto trapShader = std::make_shared<Core::Shader>("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");
     trap.AddComponent<Scene::MeshComponent>(trapMesh, trapShader);
     trap.AddComponent<Scene::CollisionComponent>(trap);
+    trap.AddComponent<Scene::TrapComponent>();
 
     return trap;
 }

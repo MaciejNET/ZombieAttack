@@ -90,6 +90,17 @@ namespace Scene {
 
     void Scene::RemoveEntity(const int id)
     {
+        if (std::ranges::find(_entities, id) == _entities.end())
+        {
+            return;
+        }
+        const auto entity = ECS::Entity(id, this);
+        if (entity.HasComponent<ScriptableComponent>())
+        {
+            auto& scriptableEntity = entity.GetComponent<ScriptableComponent>();
+            scriptableEntity.Instance->OnDestroy();
+            scriptableEntity.DestroyScript(scriptableEntity.Instance);
+        }
         std::erase(_entities, id);
         _componentManager.RemoveAllComponents(id);
     }

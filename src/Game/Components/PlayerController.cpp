@@ -111,8 +111,18 @@ void PlayerController::OnUpdate(float deltaTime)
     {
         auto oldTranslation = translation;
         transform = glm::translate(transform, translation);
-        if (collision.CollisionDetection(_entity).GetId() != -1)
+        if (auto entity = collision.CollisionDetection(_entity); entity.GetId() != -1)
         {
+            if (entity.HasComponent<Scene::CoinComponent>())
+            {
+                _coins++;
+                _entity.GetScene()->RemoveEntity(entity.GetId());
+                return;
+            }
+            if (entity.HasComponent<Scene::TrapComponent>())
+            {
+                return;
+            }
             transform = glm::translate(transform, -oldTranslation);
         }
     }

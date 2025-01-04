@@ -106,6 +106,18 @@ namespace Scene {
         BulletComponent(const BulletComponent&) = default;
     };
 
+    struct CoinComponent final : ECS::Component
+    {
+        CoinComponent() = default;
+        CoinComponent(const CoinComponent&) = default;
+    };
+
+    struct TrapComponent final : ECS::Component
+    {
+        TrapComponent() = default;
+        TrapComponent(const TrapComponent&) = default;
+    };
+
     struct DamageComponent final : ECS::Component
     {
         int Damage{10};

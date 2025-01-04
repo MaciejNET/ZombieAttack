@@ -3,6 +3,7 @@
 #include <iostream>
 #include <glm/ext/matrix_transform.hpp>
 
+#include "Game/GameObjects/EntityFactory.hpp"
 #include "Scene/Components.hpp"
 
 void ZombieController::OnUpdate(float deltaTime)
@@ -40,4 +41,9 @@ void ZombieController::OnUpdate(float deltaTime)
             }
         }
     }
+}
+
+void ZombieController::OnDestroy()
+{
+    EntityFactory::CreateCoin(*_entity.GetScene(), GetComponent<Scene::TransformComponent>().Transform);
 }

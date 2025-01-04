@@ -13,6 +13,7 @@ class PlayerController final : public ECS::ScriptableEntity
     float _speed = 3.0f;
     std::shared_ptr<Inventory> _inventory{};
     bool _itemChanged = false;
+    int _coins = 0;
 };
 
 #endif //PLAYERCONTROLLER_HPP
