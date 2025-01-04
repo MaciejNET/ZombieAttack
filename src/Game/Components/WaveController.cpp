@@ -1,5 +1,6 @@
 #include "WaveController.hpp"
 
+#include <imgui.h>
 #include <glm/ext/matrix_transform.hpp>
 #include <random>
 
@@ -12,6 +13,7 @@ void WaveController::OnCreate()
 void WaveController::OnUpdate(float deltaTime)
 {
     auto& waveComponent = _entity.GetComponent<Scene::WaveComponent>();
+    DrawWaveInfo(waveComponent);
     if (waveComponent.ZombiesLeft == 0)
     {
         if (_coolDown <= 0.0f)
@@ -94,3 +96,29 @@ void WaveController::SpawnZombie(const int count) const
         EntityFactory::CreateZombie(*scene, transform);
     }
 }
+
+void WaveController::DrawWaveInfo(const Scene::WaveComponent &waveComponent) const
+{
+    ImGuiIO& io = ImGui::GetIO();
+    float padding = 10.0f;
+    ImVec2 windowSize = ImVec2(200.0f, 100.0f);
+    ImVec2 windowPos = ImVec2(io.DisplaySize.x - windowSize.x - padding, padding);
+    ImGui::SetNextWindowPos(windowPos, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(windowSize, ImGuiCond_Always);
+
+    int minutes = static_cast<int>(_coolDown) / 60;
+    int seconds = static_cast<int>(_coolDown) % 60;
+
+    if (waveComponent.ZombiesLeft > 0)
+    {
+        minutes = 0;
+        seconds = 0;
+    }
+
+    ImGui::Begin("Wave Info");
+    ImGui::Text("Wave: %d", waveComponent.WaveNumber);
+    ImGui::Text("Zombies Left: %d", waveComponent.ZombiesLeft);
+    ImGui::Text("Next Wave in: %02d:%02d", minutes, seconds);
+    ImGui::End();
+}
+

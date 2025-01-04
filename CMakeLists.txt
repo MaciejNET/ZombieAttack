@@ -7,6 +7,18 @@ find_library(GLFW_LIBRARY NAMES glfw3 PATHS "${CMAKE_SOURCE_DIR}/dependencies/li
 find_library(ASSIMP_LIBRARY NAMES libassimp.5.4.3.dylib PATHS "${CMAKE_SOURCE_DIR}/dependencies/lib")
 include_directories("${CMAKE_SOURCE_DIR}/dependencies/include")
 
+set(IMGUI_DIR "${CMAKE_SOURCE_DIR}/dependencies/include/imgui")
+set(IMGUI_SOURCES
+        ${IMGUI_DIR}/imgui.cpp
+        ${IMGUI_DIR}/imgui_draw.cpp
+        ${IMGUI_DIR}/imgui_widgets.cpp
+        ${IMGUI_DIR}/imgui_tables.cpp
+        ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+        ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
+)
+
+include_directories(${IMGUI_DIR} ${IMGUI_DIR}/backends)
+
 if(APPLE)
     find_library(COREFOUNDATION_LIBRARY CoreFoundation)
     find_library(COREGRAPHICS_LIBRARY CoreGraphics)
@@ -75,9 +87,10 @@ add_executable(ZombieAttack
         src/Game/GameObjects/GameItems.cpp
         src/Game/GameObjects/Inventory.hpp
         src/Collisions/OrientedBoundingBox.hpp
-        src/Collisions/OrientedBoudingBox.cpp
+        src/Collisions/OrientedBoundingBox.cpp
         src/Game/Components/WaveController.cpp
         src/Game/Components/WaveController.hpp
+        ${IMGUI_SOURCES}
 )
 
 if(APPLE)

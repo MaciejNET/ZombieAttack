@@ -9,6 +9,20 @@ out vec4 FragColor;
 in vec3 Normal;
 in vec3 currentPos;
 
+float hash(float n)
+{
+    return fract(sin(n) * 43758.5453123);
+}
+
+float noise(vec2 p)
+{
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(mix(hash(i.x + i.y * 57.0), hash(i.x + 1.0 + i.y * 57.0), f.x),
+               mix(hash(i.x + (i.y + 1.0) * 57.0), hash(i.x + 1.0 + (i.y + 1.0) * 57.0), f.x), f.y);
+}
+
 void main()
 {
     float ambient = 0.2f;
@@ -30,5 +44,10 @@ void main()
 
     float specular = specularStrength * spec;
 
-    FragColor = spriteColor * lightColor * (ambient + diff + specular);
+    float noiseValue = noise(currentPos.xz * 0.1);
+    vec4 stripeColor1 = spriteColor * 0.8;
+    vec4 stripeColor2 = spriteColor * 1.2;
+    vec4 grassColor = mix(stripeColor1, stripeColor2, noiseValue);
+
+    FragColor = grassColor * lightColor * (ambient + diff + specular);
 }

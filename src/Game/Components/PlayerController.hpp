@@ -10,6 +10,7 @@ class PlayerController final : public ECS::ScriptableEntity
 {
     void OnCreate() override;
     void OnUpdate(float deltaTime) override;
+    void DrawPlayerData();
     float _speed = 3.0f;
     std::shared_ptr<Inventory> _inventory{};
     bool _itemChanged = false;

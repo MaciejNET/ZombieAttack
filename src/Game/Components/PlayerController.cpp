@@ -4,9 +4,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/ext/matrix_transform.hpp>
+#include <imgui/imgui.h>
 
 #include "BulletController.hpp"
-#include "Core/BaseShapes.hpp"
 #include "Core/InputManager.hpp"
 #include "Core/WindowManager.hpp"
 #include "Scene/Components.hpp"
@@ -131,5 +131,23 @@ void PlayerController::OnUpdate(float deltaTime)
     glm::vec3 cameraPosition = playerPosition + cameraOffset;
     camera.SetPosition(cameraPosition);
     camera.LookAt(playerPosition);
+    DrawPlayerData();
+}
+
+void PlayerController::DrawPlayerData()
+{
+    const auto playerHealth = GetComponent<Scene::HealthComponent>().Health;
+    const auto currentItemData = _inventory->GetCurrentItemData();
+    float padding = 10.0f;
+    ImVec2 windowSize = ImVec2(200.0f, 100.0f);
+    ImVec2 windowPos = ImVec2(padding, padding);
+    ImGui::SetNextWindowPos(windowPos, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(windowSize, ImGuiCond_Always);
+    ImGui::Begin("Player Data");
+    ImGui::Text("Health: %d", playerHealth);
+    ImGui::Text("Coins: %d", _coins);
+    ImGui::Text("Selected Item: %s", currentItemData.Name.c_str());
+    ImGui::Text("%s: %d", currentItemData.Type == ItemType::GUN ? "Ammo" : "Count", currentItemData.Count);
+    ImGui::End();
 }
 

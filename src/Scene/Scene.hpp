@@ -22,7 +22,6 @@ namespace Scene {
     private:
         std::vector<int> _entities;
         ECS::ComponentManager _componentManager;
-
         friend class ECS::Entity;
     };
 }

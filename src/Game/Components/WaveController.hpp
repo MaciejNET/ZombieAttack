@@ -10,6 +10,7 @@ class WaveController final : public ECS::ScriptableEntity
 
     void GenerateWave(Scene::WaveComponent& waveComponent) const;
     void SpawnZombie(int count) const;
+    void DrawWaveInfo(const Scene::WaveComponent& waveComponent) const;
     float _coolDown = 0.0f;
 };
 

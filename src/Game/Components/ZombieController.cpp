@@ -27,9 +27,16 @@ void ZombieController::OnUpdate(float deltaTime)
         auto collision = GetComponent<Scene::CollisionComponent>();
         if (distance > 0.1f)
         {
+            // Calculate the yaw angle to face the player
+            //float yaw = atan2(direction.x, direction.z);
+            //glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), yaw, glm::vec3(0.0f, 1.0f, 0.0f));
+            //transform = glm::translate(glm::mat4(1.0f), zombiePosition) * rotation;
+
+            // Move the zombie towards the player
             auto velocity = glm::normalize(direction) * _speed * deltaTime;
             transform = glm::translate(transform, velocity);
             const auto& entity = collision.CollisionDetection(_entity);
+
             if (entity.GetId() != -1)
             {
                 if (entity.HasComponent<Scene::CoinComponent>())

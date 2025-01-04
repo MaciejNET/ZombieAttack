@@ -73,6 +73,12 @@ public:
         _selectedItem = *it;
     }
 
+    GameItemData GetCurrentItemData() const
+    {
+        const auto item = _items.at(_selectedItem);
+        return item->GetData();
+    }
+
 private:
     std::unordered_map<std::type_index, std::shared_ptr<GameItem>> _items;
     std::type_index _selectedItem;
