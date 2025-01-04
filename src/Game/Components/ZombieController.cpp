@@ -8,6 +8,7 @@
 
 void ZombieController::OnUpdate(float deltaTime)
 {
+    _attackCooldown -= deltaTime;
     auto& transform = GetComponent<Scene::TransformComponent>().Transform;
     auto scene = _entity.GetScene();
     auto entities = scene->GetEntities();
@@ -31,11 +32,16 @@ void ZombieController::OnUpdate(float deltaTime)
             const auto& entity = collision.CollisionDetection(_entity);
             if (entity.GetId() != -1)
             {
-                if (entity.HasComponent<Scene::PlayerComponent>())
+                if (entity.HasComponent<Scene::CoinComponent>())
+                {
+                    return;
+                }
+                if (entity.HasComponent<Scene::PlayerComponent>() && _attackCooldown <= 0.0f)
                 {
                     auto& playerHealth = entity.GetComponent<Scene::HealthComponent>();
                     auto& damage = _entity.GetComponent<Scene::DamageComponent>().Damage;
                     playerHealth.Health -= damage;
+                    _attackCooldown = 1.0f;
                 }
                 transform = glm::translate(transform, -velocity);
             }
@@ -46,4 +52,12 @@ void ZombieController::OnUpdate(float deltaTime)
 void ZombieController::OnDestroy()
 {
     EntityFactory::CreateCoin(*_entity.GetScene(), GetComponent<Scene::TransformComponent>().Transform);
+    const auto scene = _entity.GetScene();
+    auto entities = scene->GetEntities();
+    const auto waveController = (entities | std::ranges::views::filter([](const ECS::Entity entity) {
+        return entity.HasComponent<Scene::WaveComponent>();
+    })).front();
+
+    auto& waveComponent = waveController.GetComponent<Scene::WaveComponent>();
+    waveComponent.ZombiesLeft--;
 }

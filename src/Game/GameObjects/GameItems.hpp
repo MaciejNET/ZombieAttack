@@ -58,7 +58,7 @@ protected:
 class Pistol final : public Gun
 {
 public:
-    Pistol() : Gun(1, 0.5f, 0.5f, 100, 1.0f, false) {};
+    Pistol() : Gun(1, 0.5f, 0.5f, std::numeric_limits<int>::max(), 1.0f, false) {};
 private:
     void Shoot(Scene::Scene& scene, PlayerCoordinates playerCoordinates) override;
 };
@@ -74,7 +74,7 @@ private:
 class Shotgun final : public Gun
 {
 public:
-    Shotgun() : Gun(5, 0.5f, 1.0f, 100, 1.0f, false) {};
+    Shotgun() : Gun(5, 0.5f, 1.0f, 150, 1.0f, false) {};
 private:
     void Shoot(Scene::Scene& scene, PlayerCoordinates playerCoordinates) override;
 };
@@ -82,7 +82,7 @@ private:
 class Rifle final : public Gun
 {
 public:
-    Rifle() : Gun(1, 0.25f, 0.25f, 100, 2.0f, true) {};
+    Rifle() : Gun(1, 0.25f, 0.25f, 250, 2.0f, true) {};
 private:
     void Shoot(Scene::Scene& scene, PlayerCoordinates playerCoordinates) override;
 };

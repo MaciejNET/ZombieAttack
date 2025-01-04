@@ -3,6 +3,7 @@
 #include <glm/ext/matrix_transform.hpp>
 
 #include "Components/PlayerController.hpp"
+#include "Components/WaveController.hpp"
 #include "Components/ZombieController.hpp"
 #include "Core/BaseShapes.hpp"
 #include "Core/BaseShapes.hpp"
@@ -19,57 +20,19 @@ Game::Game()
 
 void Game::Init()
 {
-    // Create entities
     auto light = _scene.AddEntity();
-    light.AddComponent<Scene::LightComponent>(glm::vec4(1.0f), glm::vec3(0.0f, 10.0f, -5.0f), 1.0f);
+    light.AddComponent<Scene::LightComponent>(glm::vec4(1.0f), glm::vec3(-5.0f, 100.0f, 75.0f), 1.0f);
 
-    auto player = _scene.AddEntity();
-    player.AddComponent<Scene::TransformComponent>(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f)));
-    player.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(0.8627f, 0.0784f, 0.2353f, 1.0f));
-    player.AddComponent<Scene::CameraComponent>(Core::Camera());
-    auto cubeShape = Core::BaseShapes::Cube();
-    auto mesh = std::make_shared<Core::Mesh>(cubeShape.Vertices, cubeShape.Indices);
-    auto model = std::make_shared<Core::Model>("../assets/player.gltf");
-    auto shader = std::make_shared<Core::Shader>("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");
-    player.AddComponent<Scene::MeshComponent>(mesh, shader);
-    //player.AddComponent<Scene::ModelComponent>(model, shader);
-    player.AddComponent<Scene::ScriptableComponent>().Bind<PlayerController>();
-    player.AddComponent<Scene::CollisionComponent>(player);
-    player.AddComponent<Scene::HealthComponent>();
-    player.AddComponent<Scene::PlayerComponent>();
+    EntityFactory::CreatePlayer(_scene, glm::mat4(0.0f));
 
-    auto zombie1 = _scene.AddEntity();
-    zombie1.AddComponent<Scene::ScriptableComponent>().Bind<ZombieController>();
-    zombie1.AddComponent<Scene::DamageComponent>();
-    zombie1.AddComponent<Scene::HealthComponent>();
-    zombie1.AddComponent<Scene::ZombieComponent>();
-    zombie1.AddComponent<Scene::DamageComponent>();
-    zombie1.AddComponent<Scene::TransformComponent>(glm::translate(glm::mat4(1.0f), glm::vec3(-5.0f, 0.0f, -5.0f)));
-    zombie1.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(0.1961f, 0.8039f, 0.1961f, 1.0f));
-    auto cubeShape1 = Core::BaseShapes::Cube();
-    auto mesh1 = std::make_shared<Core::Mesh>(cubeShape1.Vertices, cubeShape1.Indices);
-    auto shader1 = std::make_shared<Core::Shader>("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");
-    zombie1.AddComponent<Scene::MeshComponent>(mesh1, shader1);
-    zombie1.AddComponent<Scene::CollisionComponent>(zombie1);
-
-    auto zombie2 = _scene.AddEntity();
-    zombie2.AddComponent<Scene::ScriptableComponent>().Bind<ZombieController>();
-    zombie2.AddComponent<Scene::DamageComponent>();
-    zombie2.AddComponent<Scene::ZombieComponent>();
-    zombie2.AddComponent<Scene::HealthComponent>();
-    zombie2.AddComponent<Scene::DamageComponent>();
-    zombie2.AddComponent<Scene::TransformComponent>(glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 0.0f, -5.0f)));
-    zombie2.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(0.1961f, 0.8039f, 0.1961f, 1.0f));
-    auto cubeShape2 = Core::BaseShapes::Cube();
-    auto mesh2 = std::make_shared<Core::Mesh>(cubeShape2.Vertices, cubeShape2.Indices);
-    auto shader2 = std::make_shared<Core::Shader>("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");
-    zombie2.AddComponent<Scene::MeshComponent>(mesh2, shader2);
-    zombie2.AddComponent<Scene::CollisionComponent>(zombie2);
+    auto waveController = _scene.AddEntity();
+    waveController.AddComponent<Scene::WaveComponent>();
+    waveController.AddComponent<Scene::ScriptableComponent>().Bind<WaveController>();
 
     auto floor = _scene.AddEntity();
     auto& transform = floor.AddComponent<Scene::TransformComponent>(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.6f, -5.0f)));
-    transform.Transform = glm::scale(transform.Transform, glm::vec3(50.0f, 0.1f, 50.0f));
-    floor.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
+    transform.Transform = glm::scale(transform.Transform, glm::vec3(500.0f, 0.1f, 500.0f));
+    floor.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(0.93f, 0.51f, 0.93f, 1.0f));
     auto floorShape = Core::BaseShapes::Cube();
     auto floorMesh = std::make_shared<Core::Mesh>(floorShape.Vertices, floorShape.Indices);
     auto floorShader = std::make_shared<Core::Shader>("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");

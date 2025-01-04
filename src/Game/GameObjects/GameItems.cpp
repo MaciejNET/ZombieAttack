@@ -14,6 +14,7 @@ void Gun::Use(const PlayerCoordinates playerCoordinates, Scene::Scene& scene, co
             Shoot(scene, playerCoordinates);
             ShootCooldown = ShootInterval;
             Ammo -= BulletsPerShot;
+            std::cout << "Ammo: " << Ammo << std::endl;
         }
     }
     else
@@ -23,6 +24,7 @@ void Gun::Use(const PlayerCoordinates playerCoordinates, Scene::Scene& scene, co
             Shoot(scene, playerCoordinates);
             ShootCooldown = ShootInterval;
             Ammo -= BulletsPerShot;
+            std::cout << "Ammo: " << Ammo << std::endl;
         }
     }
 }

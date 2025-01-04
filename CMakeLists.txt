@@ -76,6 +76,8 @@ add_executable(ZombieAttack
         src/Game/GameObjects/Inventory.hpp
         src/Collisions/OrientedBoundingBox.hpp
         src/Collisions/OrientedBoudingBox.cpp
+        src/Game/Components/WaveController.cpp
+        src/Game/Components/WaveController.hpp
 )
 
 if(APPLE)

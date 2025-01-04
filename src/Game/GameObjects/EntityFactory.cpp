@@ -14,7 +14,8 @@ ECS::Entity EntityFactory::CreatePlayer(Scene::Scene& scene, glm::mat4 transform
     auto player = scene.AddEntity();
     player.AddComponent<Scene::TransformComponent>(transform);
     player.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(0.8627f, 0.0784f, 0.2353f, 1.0f));
-    player.AddComponent<Scene::CameraComponent>(Core::Camera());
+    auto& camera = player.AddComponent<Scene::CameraComponent>(Core::Camera());
+    camera.Camera.Translate(glm::vec3(10.0f, 25.0f, 10.0f));
     auto cubeShape = Core::BaseShapes::Cube();
     auto mesh = std::make_shared<Core::Mesh>(cubeShape.Vertices, cubeShape.Indices);
     auto shader = std::make_shared<Core::Shader>("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");

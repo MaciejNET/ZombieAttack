@@ -118,6 +118,15 @@ namespace Scene {
         TrapComponent(const TrapComponent&) = default;
     };
 
+    struct WaveComponent final : ECS::Component
+    {
+        int WaveNumber{0};
+        int ZombiesLeft{0};
+
+        WaveComponent() = default;
+        WaveComponent(const WaveComponent&) = default;
+    };
+
     struct DamageComponent final : ECS::Component
     {
         int Damage{10};
