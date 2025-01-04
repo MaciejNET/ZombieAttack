@@ -20,7 +20,7 @@ void WaveController::OnUpdate(float deltaTime)
         {
             waveComponent.WaveNumber++;
             GenerateWave(waveComponent);
-            _coolDown = 10.0f;
+            _coolDown = _coolDownTime;
         }
         else
         {
@@ -107,7 +107,7 @@ void WaveController::DrawWaveInfo(const Scene::WaveComponent &waveComponent) con
     ImGui::SetNextWindowSize(windowSize, ImGuiCond_Always);
 
     int minutes = static_cast<int>(_coolDown) / 60;
-    int seconds = static_cast<int>(_coolDown) % 60;
+    int seconds = (static_cast<int>(_coolDown) % 60)+1;
 
     if (waveComponent.ZombiesLeft > 0)
     {
