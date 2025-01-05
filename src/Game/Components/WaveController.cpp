@@ -80,6 +80,11 @@ void WaveController::GenerateWave(Scene::WaveComponent& waveComponent) const
 void WaveController::SpawnZombie(const int count) const
 {
     const auto scene = _entity.GetScene();
+    auto entities = scene->GetEntities();
+    const auto playerEntity = (entities | std::ranges::views::filter([](const ECS::Entity entity) {
+        return entity.HasComponent<Scene::PlayerComponent>();
+    })).front();
+    auto& playerTransform = playerEntity.GetComponent<Scene::TransformComponent>().Transform;
     const float distribution = 25.0f + static_cast<float>(count) / 10.0f;
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -91,7 +96,8 @@ void WaveController::SpawnZombie(const int count) const
         constexpr float y = 0.0f;
         const float z = dis(gen);
 
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, z));
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, z));
+        transform = glm::translate(transform, glm::vec3(playerTransform[3].x, playerTransform[3].y, playerTransform[3].z));
 
         EntityFactory::CreateZombie(*scene, transform);
     }

@@ -78,7 +78,7 @@ private:
 class BurstRifle final : public Gun
 {
 public:
-    BurstRifle() : Gun("Burst Rifle", 3, 0.5f, 0.25f, 121, 1.0f, false) {};
+    BurstRifle() : Gun("Burst Rifle", 3, 0.5f, 0.25f, 150, 1.0f, false) {};
 private:
     void Shoot(Scene::Scene& scene, PlayerCoordinates playerCoordinates) override;
 };
