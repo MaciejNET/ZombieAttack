@@ -1,5 +1,6 @@
 #include "OrientedBoundingBox.hpp"
 #include <memory>
+#include <cmath>
 
 namespace Collisions {
     OrientedBoundingBox ComputeOrientedBoundingBox(const std::vector<std::shared_ptr<Core::Mesh>>& meshes, const glm::mat4& transform)
@@ -30,6 +31,16 @@ namespace Collisions {
 
     bool AreOBBsOverlapping(const OrientedBoundingBox& a, const OrientedBoundingBox& b)
     {
+        // Broad phase check using bounding spheres to quickly reject far objects
+        const float radiusA = glm::length(a.HalfExtents);
+        const float radiusB = glm::length(b.HalfExtents);
+        const float radiusSum = radiusA + radiusB;
+        const float centerDistanceSq = glm::length2(a.Center - b.Center);
+        if (centerDistanceSq > radiusSum * radiusSum)
+        {
+            return false;
+        }
+
         glm::vec3 axes[15];
         int axisCount = 0;
 
@@ -49,7 +60,13 @@ namespace Collisions {
 
         for (int i = 0; i < axisCount; ++i)
         {
-            if (!IsOverlappingOnAxis(a, b, axes[i]))
+            // Skip degenerate axes
+            if (glm::length2(axes[i]) < 1e-6f)
+            {
+                continue;
+            }
+            glm::vec3 axis = glm::normalize(axes[i]);
+            if (!IsOverlappingOnAxis(a, b, axis))
             {
                 return false;
             }
@@ -68,47 +85,14 @@ namespace Collisions {
     }
 
     void ProjectOntoAxis(const OrientedBoundingBox& obb, const glm::vec3& axis, float& min, float& max)
-        {
-            glm::vec3 corners[8] = {
-                obb.Center + obb.Orientation[0] * obb.HalfExtents.x +
-                             obb.Orientation[1] * obb.HalfExtents.y +
-                             obb.Orientation[2] * obb.HalfExtents.z,
+    {
+        const float centerProjection = glm::dot(obb.Center, axis);
+        const float extentProjection =
+                std::fabs(glm::dot(obb.Orientation[0] * obb.HalfExtents.x, axis)) +
+                std::fabs(glm::dot(obb.Orientation[1] * obb.HalfExtents.y, axis)) +
+                std::fabs(glm::dot(obb.Orientation[2] * obb.HalfExtents.z, axis));
 
-                obb.Center + obb.Orientation[0] * obb.HalfExtents.x +
-                             obb.Orientation[1] * obb.HalfExtents.y -
-                             obb.Orientation[2] * obb.HalfExtents.z,
-
-                obb.Center + obb.Orientation[0] * obb.HalfExtents.x -
-                             obb.Orientation[1] * obb.HalfExtents.y +
-                             obb.Orientation[2] * obb.HalfExtents.z,
-
-                obb.Center + obb.Orientation[0] * obb.HalfExtents.x -
-                             obb.Orientation[1] * obb.HalfExtents.y -
-                             obb.Orientation[2] * obb.HalfExtents.z,
-
-                obb.Center - obb.Orientation[0] * obb.HalfExtents.x +
-                             obb.Orientation[1] * obb.HalfExtents.y +
-                             obb.Orientation[2] * obb.HalfExtents.z,
-
-                obb.Center - obb.Orientation[0] * obb.HalfExtents.x +
-                             obb.Orientation[1] * obb.HalfExtents.y -
-                             obb.Orientation[2] * obb.HalfExtents.z,
-
-                obb.Center - obb.Orientation[0] * obb.HalfExtents.x -
-                             obb.Orientation[1] * obb.HalfExtents.y +
-                             obb.Orientation[2] * obb.HalfExtents.z,
-
-                obb.Center - obb.Orientation[0] * obb.HalfExtents.x -
-                             obb.Orientation[1] * obb.HalfExtents.y -
-                             obb.Orientation[2] * obb.HalfExtents.z
-            };
-
-            min = max = glm::dot(corners[0], axis);
-            for (int i = 1; i < 8; ++i)
-            {
-                float projection = glm::dot(corners[i], axis);
-                min = glm::min(min, projection);
-                max = glm::max(max, projection);
-            }
-        }
+        min = centerProjection - extentProjection;
+        max = centerProjection + extentProjection;
+    }
 }
