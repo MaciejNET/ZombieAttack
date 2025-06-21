@@ -35,7 +35,7 @@ namespace Collisions {
         const float radiusA = glm::length(a.HalfExtents);
         const float radiusB = glm::length(b.HalfExtents);
         const float radiusSum = radiusA + radiusB;
-        const float centerDistanceSq = glm::length2(a.Center - b.Center);
+        const float centerDistanceSq = glm::length(a.Center - b.Center);
         if (centerDistanceSq > radiusSum * radiusSum)
         {
             return false;
@@ -61,7 +61,7 @@ namespace Collisions {
         for (int i = 0; i < axisCount; ++i)
         {
             // Skip degenerate axes
-            if (glm::length2(axes[i]) < 1e-6f)
+            if (glm::length(axes[i]) < 1e-6f)
             {
                 continue;
             }
