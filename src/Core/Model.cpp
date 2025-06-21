@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <memory>
+#include <glm/glm.hpp>
+#include "Macros.hpp"
 
 namespace Core {
     Model::Model(const std::string& path)
@@ -17,7 +19,26 @@ namespace Core {
         }
         for (auto &mesh : _meshes)
         {
-            mesh->Draw(shader, setFunctions, false);
+            mesh->DrawInstanced(shader, setFunctions, { glm::mat4(1.0f) }, { glm::vec4(1.0f) }, false);
+        }
+    }
+
+    void Model::DrawInstanced(const Shader& shader,
+                              const std::vector<std::function<void(const Shader&)>>& setFunctions,
+                              const std::vector<glm::mat4>& models,
+                              const std::vector<glm::vec4>& colors,
+                              const bool bindShader) const
+    {
+        ZA_ASSERT(models.size() == colors.size(), "Models and colors size mismatch");
+
+        if (bindShader)
+        {
+            shader.Use();
+        }
+
+        for (auto& mesh : _meshes)
+        {
+            mesh->DrawInstanced(shader, setFunctions, models, colors, false);
         }
     }
 

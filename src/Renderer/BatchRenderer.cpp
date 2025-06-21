@@ -4,6 +4,7 @@
 #include "Core/Macros.hpp"
 
 #include <algorithm>
+#include <glm/glm.hpp>
 
 namespace Renderer {
     void BatchRenderer::DrawBatch(const std::vector<ECS::Entity>& entities, const Core::Camera& camera, const ECS::Entity& lightEntity)
@@ -33,16 +34,28 @@ namespace Renderer {
                 shaderB = b.GetComponent<Scene::MeshComponent>().Shader.get();
             else if (b.HasComponent<Scene::ModelComponent>())
                 shaderB = b.GetComponent<Scene::ModelComponent>().Shader.get();
+            if (shaderA == shaderB)
+            {
+                const void* meshA = nullptr;
+                const void* meshB = nullptr;
+                if (a.HasComponent<Scene::MeshComponent>())
+                    meshA = a.GetComponent<Scene::MeshComponent>().Mesh.get();
+                if (b.HasComponent<Scene::MeshComponent>())
+                    meshB = b.GetComponent<Scene::MeshComponent>().Mesh.get();
+                return meshA < meshB;
+            }
             return shaderA < shaderB;
         });
 
         const auto& light = lightEntity.GetComponent<Scene::LightComponent>();
         Core::Shader* currentShader = nullptr;
 
-        for (const auto& entity : drawable)
+        size_t index = 0;
+        while (index < drawable.size())
         {
-            std::shared_ptr<Core::Shader> shader;
+            const auto& entity = drawable[index];
             bool hasMesh = entity.HasComponent<Scene::MeshComponent>();
+            std::shared_ptr<Core::Shader> shader;
             std::shared_ptr<Core::Mesh> mesh;
             std::shared_ptr<Core::Model> model;
             if (hasMesh)
@@ -64,13 +77,9 @@ namespace Renderer {
                 currentShader->Use();
             }
 
-            const auto& transform = entity.GetComponent<Scene::TransformComponent>();
-            const auto& spriteRenderer = entity.GetComponent<Scene::SpriteRendererComponent>();
             const std::vector<std::function<void(const Core::Shader&)>> setFunctions = {
                 [&](const Core::Shader& s) { s.SetMat4("view", camera.GetViewMatrix()); },
                 [&](const Core::Shader& s) { s.SetMat4("projection", camera.GetProjectionMatrix()); },
-                [&](const Core::Shader& s) { s.SetMat4("model", transform.Transform); },
-                [&](const Core::Shader& s) { s.SetVec4("spriteColor", spriteRenderer.Color); },
                 [&](const Core::Shader& s) { s.SetVec4("lightColor", light.Color); },
                 [&](const Core::Shader& s) { s.SetVec3("lightPos", light.Position); },
                 [&](const Core::Shader& s) { s.SetVec3("viewPos", camera.GetPosition()); }
@@ -78,11 +87,34 @@ namespace Renderer {
 
             if (hasMesh)
             {
-                mesh->Draw(*shader, setFunctions, false);
+                std::vector<glm::mat4> models;
+                std::vector<glm::vec4> colors;
+                size_t j = index;
+                while (j < drawable.size())
+                {
+                    const auto& other = drawable[j];
+                    if (other.HasComponent<Scene::MeshComponent>() &&
+                        other.GetComponent<Scene::MeshComponent>().Shader == shader &&
+                        other.GetComponent<Scene::MeshComponent>().Mesh == mesh)
+                    {
+                        models.push_back(other.GetComponent<Scene::TransformComponent>().Transform);
+                        colors.push_back(other.GetComponent<Scene::SpriteRendererComponent>().Color);
+                        ++j;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                mesh->DrawInstanced(*shader, setFunctions, models, colors, false);
+                index = j;
             }
             else
             {
-                model->Draw(*shader, setFunctions, false);
+                const auto& transform = entity.GetComponent<Scene::TransformComponent>();
+                const auto& spriteRenderer = entity.GetComponent<Scene::SpriteRendererComponent>();
+                model->DrawInstanced(*shader, setFunctions, { transform.Transform }, { spriteRenderer.Color }, false);
+                ++index;
             }
         }
     }
