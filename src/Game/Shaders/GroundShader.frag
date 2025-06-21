@@ -1,6 +1,5 @@
 #version 410 core
 
-uniform vec4 spriteColor;
 uniform vec4 lightColor;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
@@ -8,6 +7,7 @@ out vec4 FragColor;
 
 in vec3 Normal;
 in vec3 currentPos;
+in vec4 color;
 
 float hash(float n)
 {
@@ -45,8 +45,8 @@ void main()
     float specular = specularStrength * spec;
 
     float noiseValue = noise(currentPos.xz * 0.1);
-    vec4 stripeColor1 = spriteColor * 0.8;
-    vec4 stripeColor2 = spriteColor * 1.2;
+    vec4 stripeColor1 = color * 0.8;
+    vec4 stripeColor2 = color * 1.2;
     vec4 grassColor = mix(stripeColor1, stripeColor2, noiseValue);
 
     FragColor = grassColor * lightColor * (ambient + diff + specular);

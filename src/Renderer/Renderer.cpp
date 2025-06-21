@@ -21,8 +21,6 @@ namespace Renderer {
             const std::vector<std::function<void(const Core::Shader&)>> setFunctions = {
                 [&](const Core::Shader& shader) { shader.SetMat4("view", camera.GetViewMatrix()); },
                 [&](const Core::Shader& shader) { shader.SetMat4("projection", camera.GetProjectionMatrix()); },
-                [&](const Core::Shader& shader) { shader.SetMat4("model", transform.Transform); },
-                [&](const Core::Shader& shader) { shader.SetVec4("spriteColor", spriteRenderer.Color); },
                 [&](const Core::Shader& shader) { shader.SetVec4("lightColor", light.Color); },
                 [&](const Core::Shader& shader) { shader.SetVec3("lightPos", light.Position); },
                 [&](const Core::Shader& shader) { shader.SetVec3("viewPos", camera.GetPosition()); }
@@ -31,14 +29,14 @@ namespace Renderer {
             if (entity.HasComponent<Scene::MeshComponent>())
             {
                 const auto& mesh = entity.GetComponent<Scene::MeshComponent>();
-                mesh.Mesh->Draw(*mesh.Shader, setFunctions);
+                mesh.Mesh->DrawInstanced(*mesh.Shader, setFunctions, { transform.Transform }, { spriteRenderer.Color });
                 return;
             }
 
             if (entity.HasComponent<Scene::ModelComponent>())
             {
                 const auto& model = entity.GetComponent<Scene::ModelComponent>();
-                model.Model->Draw(*model.Shader, setFunctions);
+                model.Model->DrawInstanced(*model.Shader, setFunctions, { transform.Transform }, { spriteRenderer.Color });
                 return;
             }
         }
