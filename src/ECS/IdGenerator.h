@@ -1,7 +1,7 @@
 #ifndef ZOMBIEATTACK_IDGENERATOR_H
 #define ZOMBIEATTACK_IDGENERATOR_H
 
-#include <mutex>
+#include <atomic>
 
 namespace ECS {
     class IdGenerator
@@ -9,16 +9,13 @@ namespace ECS {
     public:
         static int GetNextId()
         {
-            std::lock_guard lock(_mutex);
             return ++_id;
         }
     private:
-        static int _id;
-        static std::mutex _mutex;
+        static std::atomic<int> _id;
     };
 
-    int IdGenerator::_id = 0;
-    std::mutex IdGenerator::_mutex;
+    std::atomic<int> IdGenerator::_id = 0;
 }
 
 #endif //ZOMBIEATTACK_IDGENERATOR_H

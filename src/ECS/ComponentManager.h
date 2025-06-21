@@ -3,11 +3,10 @@
 #define ZOMBIEATTACK_COMPONENTMANAGER_H
 
 #include <unordered_map>
-#include <vector>
+#include <memory>
 #include <typeindex>
 #include <typeinfo>
 #include <stdexcept>
-#include <memory>
 #include "Component.hpp"
 
 namespace ECS {
@@ -18,10 +17,6 @@ namespace ECS {
         {
             static_assert(std::is_base_of_v<Component, T>, "T must be derived from Component");
             auto& components = _components[typeid(T)];
-            if (entityId >= components.size())
-            {
-                components.resize(entityId + 1);
-            }
             components[entityId] = std::make_unique<T>(std::forward<Args>(args)...);
             return *static_cast<T*>(components[entityId].get());
         }
@@ -29,10 +24,10 @@ namespace ECS {
         template<typename T>
         void RemoveComponent(const int entityId)
         {
-            auto& components = _components[typeid(T)];
-            if (entityId < components.size())
+            auto it = _components.find(typeid(T));
+            if (it != _components.end())
             {
-                components[entityId].reset();
+                it->second.erase(entityId);
             }
         }
 
@@ -40,10 +35,7 @@ namespace ECS {
         {
             for (auto& [type, components] : _components)
             {
-                if (entityId < components.size())
-                {
-                    components[entityId].reset();
-                }
+                components.erase(entityId);
             }
         }
 
@@ -56,22 +48,23 @@ namespace ECS {
                 return false;
             }
             const auto& components = it->second;
-            return entityId < components.size() && components[entityId] != nullptr;
+            return components.find(entityId) != components.end();
         }
 
         template<typename T>
         T& GetComponent(const int entityId)
         {
             auto& components = _components.at(typeid(T));
-            if (entityId >= components.size() || !components[entityId])
+            auto compIt = components.find(entityId);
+            if (compIt == components.end())
             {
                 throw std::runtime_error("Component not found");
             }
-            return *static_cast<T*>(components[entityId].get());
+            return *static_cast<T*>(compIt->second.get());
         }
 
     private:
-        std::unordered_map<std::type_index, std::vector<std::unique_ptr<Component>>> _components;
+        std::unordered_map<std::type_index, std::unordered_map<int, std::unique_ptr<Component>>> _components;
     };
 } // namespace ECS
 
