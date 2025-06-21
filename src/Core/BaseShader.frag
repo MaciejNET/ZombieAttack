@@ -1,6 +1,5 @@
 #version 410 core
 
-uniform vec4 spriteColor;
 uniform vec4 lightColor;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
@@ -8,6 +7,7 @@ out vec4 FragColor;
 
 in vec3 Normal;
 in vec3 currentPos;
+in vec4 color;
 
 void main()
 {
@@ -30,5 +30,5 @@ void main()
 
     float specular = specularStrength * spec;
 
-    FragColor = spriteColor * lightColor * (ambient + diff + specular);
+    FragColor = color * lightColor * (ambient + diff + specular);
 }
