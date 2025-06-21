@@ -5,13 +5,14 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include "Mesh.hpp"
+#include <memory>
 
 namespace Core {
     class Model
     {
     public:
         explicit Model(const std::string& path);
-        void Draw(const Shader& shader, const std::vector<std::function<void(const Shader&)>>& setFunctions) const;
+        void Draw(const Shader& shader, const std::vector<std::function<void(const Shader&)>>& setFunctions, bool bindShader = true) const;
         std::vector<std::shared_ptr<Mesh>> GetMeshes() const { return _meshes; }
     private:
         std::vector<std::shared_ptr<Mesh>> _meshes;

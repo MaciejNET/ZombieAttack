@@ -8,6 +8,7 @@
 #include "Events/EventBus.hpp"
 #include "ECS/Entity.hpp"
 #include "Renderer/Renderer.hpp"
+#include "Renderer/BatchRenderer.hpp"
 
 namespace Scene {
     ECS::Entity Scene::AddEntity()
@@ -81,11 +82,14 @@ namespace Scene {
 
         int firstLight = *firstLightIt;
         const ECS::Entity mainLight(firstLight, this);
+
+        std::vector<ECS::Entity> drawEntities;
+        drawEntities.reserve(_entities.size());
         for (const auto& entityId : _entities)
         {
-            ECS::Entity entity(entityId, this);
-            Renderer::Renderer::Draw(entity, camera, mainLight);
+            drawEntities.emplace_back(entityId, this);
         }
+        Renderer::BatchRenderer::DrawBatch(drawEntities, camera, mainLight);
     }
 
     void Scene::RemoveEntity(const int id)

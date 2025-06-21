@@ -1,6 +1,7 @@
 #include "Model.hpp"
 
 #include <iostream>
+#include <memory>
 
 namespace Core {
     Model::Model(const std::string& path)
@@ -8,11 +9,15 @@ namespace Core {
         LoadModel(path);
     }
 
-    void Model::Draw(const Shader &shader, const std::vector<std::function<void(const Shader &)>> &setFunctions) const
+    void Model::Draw(const Shader &shader, const std::vector<std::function<void(const Shader &)>> &setFunctions, bool bindShader) const
     {
+        if (bindShader)
+        {
+            shader.Use();
+        }
         for (auto &mesh : _meshes)
         {
-            mesh->Draw(shader, setFunctions);
+            mesh->Draw(shader, setFunctions, false);
         }
     }
 

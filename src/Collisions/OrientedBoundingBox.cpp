@@ -1,4 +1,5 @@
 #include "OrientedBoundingBox.hpp"
+#include <memory>
 
 namespace Collisions {
     OrientedBoundingBox ComputeOrientedBoundingBox(const std::vector<std::shared_ptr<Core::Mesh>>& meshes, const glm::mat4& transform)

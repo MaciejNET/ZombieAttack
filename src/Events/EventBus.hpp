@@ -1,6 +1,10 @@
 #ifndef EVENTBUS_HPP
 #define EVENTBUS_HPP
 #include <functional>
+#include <memory>
+#include <unordered_map>
+#include <vector>
+#include <type_traits>
 
 #include "Event.hpp"
 
