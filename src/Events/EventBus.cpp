@@ -1,4 +1,5 @@
 #include <Events/EventBus.hpp>
+#include <memory>
 
 namespace Events {
     std::unordered_map<EventType, std::vector<std::function<void(Event&)>>> EventBus::_handlers;

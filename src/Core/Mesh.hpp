@@ -14,7 +14,7 @@ namespace Core {
     public:
         Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
         ~Mesh();
-        void Draw(const Shader& shader, const std::vector<std::function<void(const Shader&)>>& setFunctions) const;
+        void Draw(const Shader& shader, const std::vector<std::function<void(const Shader&)>>& setFunctions, bool bindShader = true) const;
         VAO GetVAO() const;
         std::vector<Vertex> GetVertices() const { return _vertices; }
         std::vector<unsigned int> GetIndices() const { return _indices; }

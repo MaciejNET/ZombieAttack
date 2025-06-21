@@ -25,9 +25,12 @@ namespace Core {
         _ebo.Delete();
     }
 
-    void Mesh::Draw(const Shader& shader, const std::vector<std::function<void(const Shader&)>>& setFunctions) const
+    void Mesh::Draw(const Shader& shader, const std::vector<std::function<void(const Shader&)>>& setFunctions, bool bindShader) const
     {
-        shader.Use();
+        if (bindShader)
+        {
+            shader.Use();
+        }
         _vao.Bind();
         for (const auto& setFunction : setFunctions) {
             setFunction(shader);

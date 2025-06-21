@@ -3,8 +3,8 @@ project(ZombieAttack)
 
 set(CMAKE_CXX_STANDARD 20)
 
-find_library(GLFW_LIBRARY NAMES glfw3 PATHS "${CMAKE_SOURCE_DIR}/dependencies/lib")
-find_library(ASSIMP_LIBRARY NAMES libassimp.5.4.3.dylib PATHS "${CMAKE_SOURCE_DIR}/dependencies/lib")
+find_package(glfw3 3.3 REQUIRED)
+find_package(assimp REQUIRED)
 include_directories("${CMAKE_SOURCE_DIR}/dependencies/include")
 
 set(IMGUI_DIR "${CMAKE_SOURCE_DIR}/dependencies/include/imgui")
@@ -68,6 +68,8 @@ add_executable(ZombieAttack
         src/ECS/IdGenerator.h
         src/Renderer/Renderer.cpp
         src/Renderer/Renderer.hpp
+        src/Renderer/BatchRenderer.cpp
+        src/Renderer/BatchRenderer.hpp
         src/Core/BaseShapes.hpp
         src/Core/Macros.hpp
         src/ECS/ScriptableEntity.hpp
@@ -94,7 +96,7 @@ add_executable(ZombieAttack
 )
 
 if(APPLE)
-    target_link_libraries(ZombieAttack ${GLFW_LIBRARY} ${ASSIMP_LIBRARY} ${COREFOUNDATION_LIBRARY} ${COREGRAPHICS_LIBRARY} ${IOKIT_LIBRARY} ${COCOA_LIBRARY})
+    target_link_libraries(ZombieAttack glfw assimp ${COREFOUNDATION_LIBRARY} ${COREGRAPHICS_LIBRARY} ${IOKIT_LIBRARY} ${COCOA_LIBRARY})
 else()
-    target_link_libraries(ZombieAttack ${GLFW_LIBRARY} ${ASSIMP_LIBRARY})
+    target_link_libraries(ZombieAttack glfw assimp)
 endif()
