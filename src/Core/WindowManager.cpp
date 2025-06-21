@@ -1,4 +1,5 @@
 #include "WindowManager.hpp"
+#include "InputManager.hpp"
 
 #include <iostream>
 
@@ -167,6 +168,7 @@ namespace Core {
         if (ypos > height) ypos = height;
 
         glfwSetCursorPos(window, xpos, ypos);
+        InputManager::CursorPosCallback(window, xpos, ypos);
     }
 
     void WindowManager::CloseWindow()

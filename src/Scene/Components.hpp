@@ -1,7 +1,9 @@
 #ifndef COMPONENTS_HPP
 #define COMPONENTS_HPP
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <ranges>
+#include <cstring>
 
 #include "Core/Camera.hpp"
 #include "Core/Mesh.hpp"
@@ -180,10 +182,16 @@ namespace Scene {
         }
         CollisionComponent(const CollisionComponent&) = default;
         Collisions::OrientedBoundingBox BoundingBox;
+        glm::mat4 LastTransform{1.0f};
 
         void UpdateBoundingBox(const ECS::Entity entity)
         {
             const auto& transform = entity.GetComponent<TransformComponent>().Transform;
+            if (std::memcmp(glm::value_ptr(transform), glm::value_ptr(LastTransform), sizeof(glm::mat4)) == 0)
+            {
+                return;
+            }
+            LastTransform = transform;
             std::vector<std::shared_ptr<Core::Mesh>> meshes;
             if (entity.HasComponent<MeshComponent>())
             {
