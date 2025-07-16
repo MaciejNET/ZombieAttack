@@ -46,13 +46,18 @@ void EntityFactory::InitResources()
             // Body
             { cube, glm::scale(glm::mat4(1.0f), glm::vec3(0.6f, 1.0f, 0.3f)) },
             // Head
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.6f)), glm::vec3(0.0f, 1.3f, 0.0f)) },
-            // Arms
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(0.65f, 0.1f, 0.0f)) },
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(-0.65f, 0.1f, 0.0f)) },
+            { cube, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.3f, 0.0f)) *
+                     glm::scale(glm::mat4(1.0f), glm::vec3(0.6f)) },
+            // Arms - translate first so offsets are not affected by scaling
+            { cube, glm::translate(glm::mat4(1.0f), glm::vec3(0.65f, 0.1f, 0.25f)) *
+                     glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)) },
+            { cube, glm::translate(glm::mat4(1.0f), glm::vec3(-0.65f, 0.1f, 0.25f)) *
+                     glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)) },
             // Legs
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(0.2f, -0.9f, 0.0f)) },
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(-0.2f, -0.9f, 0.0f)) }
+            { cube, glm::translate(glm::mat4(1.0f), glm::vec3(0.2f, -0.9f, 0.0f)) *
+                     glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)) },
+            { cube, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, -0.9f, 0.0f)) *
+                     glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)) }
         };
         _playerModel = Core::ModelBuilder::FromShapes(parts);
     }
@@ -62,11 +67,16 @@ void EntityFactory::InitResources()
         auto cube = Core::BaseShapes::Cube();
         std::vector<Core::MeshTransform> parts = {
             { cube, glm::scale(glm::mat4(1.0f), glm::vec3(0.6f, 1.0f, 0.3f)) },
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.6f)), glm::vec3(0.0f, 1.3f, 0.0f)) },
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(0.65f, 0.1f, 0.0f)) },
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(-0.65f, 0.1f, 0.0f)) },
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(0.2f, -0.9f, 0.0f)) },
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(-0.2f, -0.9f, 0.0f)) }
+            { cube, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.3f, 0.0f)) *
+                     glm::scale(glm::mat4(1.0f), glm::vec3(0.6f)) },
+            { cube, glm::translate(glm::mat4(1.0f), glm::vec3(0.65f, 0.1f, 0.25f)) *
+                     glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)) },
+            { cube, glm::translate(glm::mat4(1.0f), glm::vec3(-0.65f, 0.1f, 0.25f)) *
+                     glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)) },
+            { cube, glm::translate(glm::mat4(1.0f), glm::vec3(0.2f, -0.9f, 0.0f)) *
+                     glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)) },
+            { cube, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, -0.9f, 0.0f)) *
+                     glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)) }
         };
         _zombieModel = Core::ModelBuilder::FromShapes(parts);
     }
@@ -86,9 +96,13 @@ void EntityFactory::InitResources()
     if (!_pistolModel)
     {
         std::vector<Core::MeshTransform> parts = {
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.4f, 0.1f)), glm::vec3(0.0f, -0.2f, 0.0f)) },
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.2f, 0.2f)), glm::vec3(0.0f, 0.1f, 0.0f)) },
-            { cylinder, glm::translate(glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(0.35f, 0.1f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 0.5f)) }
+            { cube, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.2f, 0.0f)) *
+                     glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.4f, 0.1f)) },
+            { cube, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.1f, 0.0f)) *
+                     glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.2f, 0.2f)) },
+            { cylinder, glm::translate(glm::mat4(1.0f), glm::vec3(0.35f, 0.1f, 0.0f)) *
+                         glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)) *
+                         glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 0.5f)) }
         };
         _pistolModel = Core::ModelBuilder::FromShapes(parts);
     }
@@ -97,8 +111,11 @@ void EntityFactory::InitResources()
     {
         std::vector<Core::MeshTransform> parts = {
             { cube, glm::scale(glm::mat4(1.0f), glm::vec3(0.6f, 0.2f, 0.2f)) },
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.15f, 0.4f, 0.15f)), glm::vec3(-0.2f, -0.2f, 0.0f)) },
-            { cylinder, glm::translate(glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(0.45f, 0.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 0.8f)) }
+            { cube, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, -0.2f, 0.0f)) *
+                     glm::scale(glm::mat4(1.0f), glm::vec3(0.15f, 0.4f, 0.15f)) },
+            { cylinder, glm::translate(glm::mat4(1.0f), glm::vec3(0.45f, 0.0f, 0.0f)) *
+                         glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)) *
+                         glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 0.8f)) }
         };
         _burstRifleModel = Core::ModelBuilder::FromShapes(parts);
     }
@@ -107,9 +124,14 @@ void EntityFactory::InitResources()
     {
         std::vector<Core::MeshTransform> parts = {
             { cube, glm::scale(glm::mat4(1.0f), glm::vec3(0.7f, 0.2f, 0.2f)) },
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.5f, 0.2f)), glm::vec3(-0.25f, -0.25f, 0.0f)) },
-            { cylinder, glm::translate(glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(0.5f, 0.05f, 0.05f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 1.0f)) },
-            { cylinder, glm::translate(glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(0.5f, -0.05f, -0.05f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 1.0f)) }
+            { cube, glm::translate(glm::mat4(1.0f), glm::vec3(-0.25f, -0.25f, 0.0f)) *
+                     glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.5f, 0.2f)) },
+            { cylinder, glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.05f, 0.05f)) *
+                         glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)) *
+                         glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 1.0f)) },
+            { cylinder, glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, -0.05f, -0.05f)) *
+                         glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)) *
+                         glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 1.0f)) }
         };
         _shotgunModel = Core::ModelBuilder::FromShapes(parts);
     }
@@ -118,8 +140,11 @@ void EntityFactory::InitResources()
     {
         std::vector<Core::MeshTransform> parts = {
             { cube, glm::scale(glm::mat4(1.0f), glm::vec3(0.8f, 0.2f, 0.2f)) },
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.5f, 0.2f)), glm::vec3(-0.3f, -0.25f, 0.0f)) },
-            { cylinder, glm::translate(glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(0.6f, 0.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 1.2f)) }
+            { cube, glm::translate(glm::mat4(1.0f), glm::vec3(-0.3f, -0.25f, 0.0f)) *
+                     glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.5f, 0.2f)) },
+            { cylinder, glm::translate(glm::mat4(1.0f), glm::vec3(0.6f, 0.0f, 0.0f)) *
+                         glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)) *
+                         glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 1.2f)) }
         };
         _rifleModel = Core::ModelBuilder::FromShapes(parts);
     }
@@ -128,9 +153,15 @@ void EntityFactory::InitResources()
     {
         std::vector<Core::MeshTransform> parts = {
             { cube, glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.3f, 0.3f)) },
-            { cylinder, glm::translate(glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(0.4f, 0.1f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 0.8f)) },
-            { cylinder, glm::translate(glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(0.4f, -0.1f, 0.1f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 0.8f)) },
-            { cylinder, glm::translate(glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(0.4f, -0.1f, -0.1f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 0.8f)) }
+            { cylinder, glm::translate(glm::mat4(1.0f), glm::vec3(0.4f, 0.1f, 0.0f)) *
+                         glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)) *
+                         glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 0.8f)) },
+            { cylinder, glm::translate(glm::mat4(1.0f), glm::vec3(0.4f, -0.1f, 0.1f)) *
+                         glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)) *
+                         glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 0.8f)) },
+            { cylinder, glm::translate(glm::mat4(1.0f), glm::vec3(0.4f, -0.1f, -0.1f)) *
+                         glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)) *
+                         glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 0.8f)) }
         };
         _minigunModel = Core::ModelBuilder::FromShapes(parts);
     }
@@ -190,9 +221,9 @@ ECS::Entity EntityFactory::CreateCoin(Scene::Scene& scene, glm::mat4 transform)
     InitResources();
     auto coin = scene.AddEntity();
     auto& coinTransform = coin.AddComponent<Scene::TransformComponent>(transform);
-    coinTransform.Transform = glm::scale(coinTransform.Transform, glm::vec3(0.8f));
-    coinTransform.Transform = glm::rotate(coinTransform.Transform, glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
     coinTransform.Transform = glm::translate(coinTransform.Transform, glm::vec3(0.0f, 0.5f, 0.0f));
+    coinTransform.Transform = glm::rotate(coinTransform.Transform, glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
+    coinTransform.Transform = glm::scale(coinTransform.Transform, glm::vec3(0.8f));
     coin.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(1.0, 0.843, 0.0, 1.0));
     coin.AddComponent<Scene::ModelComponent>(_coinModel, _baseShader);
     coin.AddComponent<Scene::CollisionComponent>(coin);
