@@ -22,6 +22,11 @@ void ZombieController::OnUpdate(float deltaTime)
         auto playerPosition = glm::vec3(playerTransform[3]);
         auto zombiePosition = glm::vec3(transform[3]);
         auto direction = playerPosition - zombiePosition;
+        glm::vec3 flatDir = direction;
+        flatDir.y = 0.0f;
+        float yaw = atan2(flatDir.x, flatDir.z);
+        glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), yaw, glm::vec3(0.0f, 1.0f, 0.0f));
+        transform = glm::translate(glm::mat4(1.0f), zombiePosition) * rotation;
         auto distance = glm::length(direction);
 
         auto collision = GetComponent<Scene::CollisionComponent>();

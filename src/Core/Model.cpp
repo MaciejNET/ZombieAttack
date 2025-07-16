@@ -11,6 +11,11 @@ namespace Core {
         LoadModel(path);
     }
 
+    Model::Model(std::vector<std::shared_ptr<Mesh>> meshes)
+        : _meshes(std::move(meshes))
+    {
+    }
+
     void Model::Draw(const Shader &shader, const std::vector<std::function<void(const Shader &)>> &setFunctions, bool bindShader) const
     {
         if (bindShader)
