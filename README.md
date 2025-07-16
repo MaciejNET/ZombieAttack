@@ -1,3 +1,3 @@
 # Zombie Attack Game
 
-## Technologies: C++, OpenGL 4.1
+## Technologies: C++, Vulkan
