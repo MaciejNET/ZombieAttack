@@ -3,9 +3,9 @@
 #ifndef WINDOWMANAGER_HPP
 #define WINDOWMANAGER_HPP
 #include <vector>
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <memory>
+#include "Vulkan/VulkanContext.hpp"
 
 namespace Core {
     struct Resolution
@@ -37,6 +37,7 @@ namespace Core {
         static void UpdateViewport(int width, int height);
         static void CursorPositionCallback(GLFWwindow* window, double xpos, double ypos);
         static std::unique_ptr<GLFWwindow, decltype(&glfwDestroyWindow)> _window;
+        static Vulkan::VulkanContext _vulkanContext;
         static std::vector<Resolution> resolutions;
         static int currentResolutionIndex;
         static bool _isFullscreen;

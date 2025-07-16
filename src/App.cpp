@@ -7,11 +7,12 @@
 #include "Events/EventBus.hpp"
 #include <imgui/imgui.h>
 #include <imgui/backends/imgui_impl_glfw.h>
-#include <imgui/backends/imgui_impl_opengl3.h>
+#include <imgui/backends/imgui_impl_vulkan.h>
+#include <vulkan.h>
 
 App::App()
 {
-    Core::WindowManager::Initialize(1280, 960, "OpenGL App");
+    Core::WindowManager::Initialize(1280, 960, "Vulkan App");
     Core::InputManager::Initialize();
     _game = Game();
 
@@ -19,14 +20,14 @@ App::App()
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(Core::WindowManager::GetWindow(), true);
-    ImGui_ImplOpenGL3_Init("#version 410");
+    ImGui_ImplGlfw_InitForVulkan(Core::WindowManager::GetWindow(), true);
+    ImGui_ImplVulkan_InitInfo init_info{};
+    ImGui_ImplVulkan_Init(&init_info);
 }
 
 void App::Run()
 {
     _game.Init();
-    glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(Core::WindowManager::GetWindow()))
     {
         glfwSwapInterval(0);
@@ -50,7 +51,7 @@ void App::Run()
 
         Core::WindowManager::ClearScreen();
 
-        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplVulkan_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
@@ -58,7 +59,7 @@ void App::Run()
         Events::EventBus::DispatchEvents();
 
         ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), VK_NULL_HANDLE);
 
         glfwSwapBuffers(Core::WindowManager::GetWindow());
         glfwPollEvents();
@@ -67,10 +68,10 @@ void App::Run()
         _deltaTime = endFrame - startFrame;
 
         const auto fps = static_cast<int>(1.0f / _deltaTime);
-        Core::WindowManager::SetTitle(("OpenGL App - FPS: " + std::to_string(fps)).c_str());
+        Core::WindowManager::SetTitle(("Vulkan App - FPS: " + std::to_string(fps)).c_str());
     }
 
-    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplVulkan_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 }

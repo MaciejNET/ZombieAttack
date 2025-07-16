@@ -1,10 +1,12 @@
 #include "WindowManager.hpp"
 #include "InputManager.hpp"
+#include <glad/glad.h>
 
 #include <iostream>
 
 namespace Core {
     std::unique_ptr<GLFWwindow, decltype(&glfwDestroyWindow)> WindowManager::_window {nullptr, glfwDestroyWindow};
+    Vulkan::VulkanContext WindowManager::_vulkanContext{};
     std::vector<Resolution> WindowManager::resolutions;
     int WindowManager::currentResolutionIndex;
     bool WindowManager::_isFullscreen;
@@ -43,6 +45,8 @@ namespace Core {
             exit(EXIT_FAILURE);
         }
 
+        _vulkanContext.Initialize(_window.get());
+
         glfwSetFramebufferSizeCallback(_window.get(), FramebufferSizeCallback);
         glfwSetCursorPosCallback(_window.get(), CursorPositionCallback);
         glEnable(GL_DEPTH_TEST);
@@ -70,6 +74,7 @@ namespace Core {
 
     void WindowManager::Cleanup()
     {
+        _vulkanContext.Cleanup();
         glfwTerminate();
     }
 
