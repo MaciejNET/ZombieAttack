@@ -16,6 +16,11 @@ std::shared_ptr<Core::Shader> EntityFactory::_baseShader = nullptr;
 std::shared_ptr<Core::Model> EntityFactory::_playerModel = nullptr;
 std::shared_ptr<Core::Model> EntityFactory::_zombieModel = nullptr;
 std::shared_ptr<Core::Model> EntityFactory::_coinModel = nullptr;
+std::shared_ptr<Core::Model> EntityFactory::_pistolModel = nullptr;
+std::shared_ptr<Core::Model> EntityFactory::_burstRifleModel = nullptr;
+std::shared_ptr<Core::Model> EntityFactory::_shotgunModel = nullptr;
+std::shared_ptr<Core::Model> EntityFactory::_rifleModel = nullptr;
+std::shared_ptr<Core::Model> EntityFactory::_minigunModel = nullptr;
 
 void EntityFactory::InitResources()
 {
@@ -36,33 +41,98 @@ void EntityFactory::InitResources()
 
     if (!_playerModel)
     {
-        auto body = Core::BaseShapes::Cube();
-        auto head = Core::BaseShapes::Sphere();
+        auto cube = Core::BaseShapes::Cube();
         std::vector<Core::MeshTransform> parts = {
-            { body, glm::scale(glm::mat4(1.0f), glm::vec3(0.6f, 1.0f, 0.4f)) },
-            { head, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.35f)), glm::vec3(0.0f, 0.75f, 0.0f)) }
+            // Body
+            { cube, glm::scale(glm::mat4(1.0f), glm::vec3(0.6f, 1.0f, 0.3f)) },
+            // Head
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.6f)), glm::vec3(0.0f, 1.3f, 0.0f)) },
+            // Arms
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(0.45f, 0.1f, 0.0f)) },
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(-0.45f, 0.1f, 0.0f)) },
+            // Legs
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(0.2f, -0.9f, 0.0f)) },
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(-0.2f, -0.9f, 0.0f)) }
         };
         _playerModel = Core::ModelBuilder::FromShapes(parts);
     }
 
     if (!_zombieModel)
     {
-        auto body = Core::BaseShapes::Cube();
-        auto head = Core::BaseShapes::Sphere();
+        auto cube = Core::BaseShapes::Cube();
         std::vector<Core::MeshTransform> parts = {
-            { body, glm::scale(glm::mat4(1.0f), glm::vec3(0.6f, 1.0f, 0.4f)) },
-            { head, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.35f)), glm::vec3(0.0f, 0.75f, 0.0f)) }
+            { cube, glm::scale(glm::mat4(1.0f), glm::vec3(0.6f, 1.0f, 0.3f)) },
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.6f)), glm::vec3(0.0f, 1.3f, 0.0f)) },
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(0.45f, 0.1f, 0.0f)) },
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(-0.45f, 0.1f, 0.0f)) },
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(0.2f, -0.9f, 0.0f)) },
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(-0.2f, -0.9f, 0.0f)) }
         };
         _zombieModel = Core::ModelBuilder::FromShapes(parts);
     }
 
     if (!_coinModel)
     {
-        auto sphere = Core::BaseShapes::Sphere();
+        auto cyl = Core::BaseShapes::Cylinder();
         std::vector<Core::MeshTransform> parts = {
-            { sphere, glm::scale(glm::mat4(1.0f), glm::vec3(0.5f)) }
+            { cyl, glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.1f, 0.5f)) }
         };
         _coinModel = Core::ModelBuilder::FromShapes(parts);
+    }
+
+    auto cube = Core::BaseShapes::Cube();
+    auto cylinder = Core::BaseShapes::Cylinder();
+
+    if (!_pistolModel)
+    {
+        std::vector<Core::MeshTransform> parts = {
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.4f, 0.1f)), glm::vec3(0.0f, -0.2f, 0.0f)) },
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.2f, 0.2f)), glm::vec3(0.0f, 0.1f, 0.0f)) },
+            { cylinder, glm::translate(glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(0.35f, 0.1f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 0.5f)) }
+        };
+        _pistolModel = Core::ModelBuilder::FromShapes(parts);
+    }
+
+    if (!_burstRifleModel)
+    {
+        std::vector<Core::MeshTransform> parts = {
+            { cube, glm::scale(glm::mat4(1.0f), glm::vec3(0.6f, 0.2f, 0.2f)) },
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.15f, 0.4f, 0.15f)), glm::vec3(-0.2f, -0.2f, 0.0f)) },
+            { cylinder, glm::translate(glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(0.45f, 0.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 0.8f)) }
+        };
+        _burstRifleModel = Core::ModelBuilder::FromShapes(parts);
+    }
+
+    if (!_shotgunModel)
+    {
+        std::vector<Core::MeshTransform> parts = {
+            { cube, glm::scale(glm::mat4(1.0f), glm::vec3(0.7f, 0.2f, 0.2f)) },
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.5f, 0.2f)), glm::vec3(-0.25f, -0.25f, 0.0f)) },
+            { cylinder, glm::translate(glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(0.5f, 0.05f, 0.05f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 1.0f)) },
+            { cylinder, glm::translate(glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(0.5f, -0.05f, -0.05f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 1.0f)) }
+        };
+        _shotgunModel = Core::ModelBuilder::FromShapes(parts);
+    }
+
+    if (!_rifleModel)
+    {
+        std::vector<Core::MeshTransform> parts = {
+            { cube, glm::scale(glm::mat4(1.0f), glm::vec3(0.8f, 0.2f, 0.2f)) },
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.5f, 0.2f)), glm::vec3(-0.3f, -0.25f, 0.0f)) },
+            { cylinder, glm::translate(glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(0.6f, 0.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 1.2f)) }
+        };
+        _rifleModel = Core::ModelBuilder::FromShapes(parts);
+    }
+
+    if (!_minigunModel)
+    {
+        std::vector<Core::MeshTransform> parts = {
+            { cube, glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.3f, 0.3f)) },
+            { cylinder, glm::translate(glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(0.4f, 0.1f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 0.8f)) },
+            { cylinder, glm::translate(glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(0.4f, -0.1f, 0.1f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 0.8f)) },
+            { cylinder, glm::translate(glm::rotate(glm::mat4(1.0f), glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(0.4f, -0.1f, -0.1f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 0.8f)) }
+        };
+        _minigunModel = Core::ModelBuilder::FromShapes(parts);
     }
 }
 ECS::Entity EntityFactory::CreatePlayer(Scene::Scene& scene, glm::mat4 transform)

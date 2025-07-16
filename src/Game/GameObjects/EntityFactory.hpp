@@ -27,6 +27,11 @@ private:
     static std::shared_ptr<Core::Model> _playerModel;
     static std::shared_ptr<Core::Model> _zombieModel;
     static std::shared_ptr<Core::Model> _coinModel;
+    static std::shared_ptr<Core::Model> _pistolModel;
+    static std::shared_ptr<Core::Model> _burstRifleModel;
+    static std::shared_ptr<Core::Model> _shotgunModel;
+    static std::shared_ptr<Core::Model> _rifleModel;
+    static std::shared_ptr<Core::Model> _minigunModel;
 };
 
 #endif //ENTITYFACTORY_HPP
