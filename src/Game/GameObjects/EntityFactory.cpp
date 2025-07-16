@@ -48,8 +48,8 @@ void EntityFactory::InitResources()
             // Head
             { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.6f)), glm::vec3(0.0f, 1.3f, 0.0f)) },
             // Arms
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(0.55f, 0.1f, 0.0f)) },
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(-0.55f, 0.1f, 0.0f)) },
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(0.65f, 0.1f, 0.0f)) },
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(-0.65f, 0.1f, 0.0f)) },
             // Legs
             { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(0.2f, -0.9f, 0.0f)) },
             { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(-0.2f, -0.9f, 0.0f)) }
@@ -63,8 +63,8 @@ void EntityFactory::InitResources()
         std::vector<Core::MeshTransform> parts = {
             { cube, glm::scale(glm::mat4(1.0f), glm::vec3(0.6f, 1.0f, 0.3f)) },
             { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.6f)), glm::vec3(0.0f, 1.3f, 0.0f)) },
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(0.55f, 0.1f, 0.0f)) },
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(-0.55f, 0.1f, 0.0f)) },
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(0.65f, 0.1f, 0.0f)) },
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(-0.65f, 0.1f, 0.0f)) },
             { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(0.2f, -0.9f, 0.0f)) },
             { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(-0.2f, -0.9f, 0.0f)) }
         };
@@ -224,5 +224,60 @@ ECS::Entity EntityFactory::CreateObstacle(Scene::Scene& scene, glm::mat4 transfo
     obstacle.AddComponent<Scene::CollisionComponent>(obstacle);
 
     return obstacle;
+}
+
+ECS::Entity EntityFactory::CreatePistol(Scene::Scene& scene, glm::mat4 transform)
+{
+    InitResources();
+    auto gun = scene.AddEntity();
+    gun.AddComponent<Scene::TransformComponent>(transform);
+    gun.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(0.4f, 0.4f, 0.4f, 1.0f));
+    gun.AddComponent<Scene::ModelComponent>(_pistolModel, _baseShader);
+    gun.AddComponent<Scene::CollisionComponent>(gun);
+    return gun;
+}
+
+ECS::Entity EntityFactory::CreateBurstRifle(Scene::Scene& scene, glm::mat4 transform)
+{
+    InitResources();
+    auto gun = scene.AddEntity();
+    gun.AddComponent<Scene::TransformComponent>(transform);
+    gun.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(0.4f, 0.4f, 0.4f, 1.0f));
+    gun.AddComponent<Scene::ModelComponent>(_burstRifleModel, _baseShader);
+    gun.AddComponent<Scene::CollisionComponent>(gun);
+    return gun;
+}
+
+ECS::Entity EntityFactory::CreateShotgun(Scene::Scene& scene, glm::mat4 transform)
+{
+    InitResources();
+    auto gun = scene.AddEntity();
+    gun.AddComponent<Scene::TransformComponent>(transform);
+    gun.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(0.4f, 0.4f, 0.4f, 1.0f));
+    gun.AddComponent<Scene::ModelComponent>(_shotgunModel, _baseShader);
+    gun.AddComponent<Scene::CollisionComponent>(gun);
+    return gun;
+}
+
+ECS::Entity EntityFactory::CreateRifle(Scene::Scene& scene, glm::mat4 transform)
+{
+    InitResources();
+    auto gun = scene.AddEntity();
+    gun.AddComponent<Scene::TransformComponent>(transform);
+    gun.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(0.4f, 0.4f, 0.4f, 1.0f));
+    gun.AddComponent<Scene::ModelComponent>(_rifleModel, _baseShader);
+    gun.AddComponent<Scene::CollisionComponent>(gun);
+    return gun;
+}
+
+ECS::Entity EntityFactory::CreateMinigun(Scene::Scene& scene, glm::mat4 transform)
+{
+    InitResources();
+    auto gun = scene.AddEntity();
+    gun.AddComponent<Scene::TransformComponent>(transform);
+    gun.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(0.4f, 0.4f, 0.4f, 1.0f));
+    gun.AddComponent<Scene::ModelComponent>(_minigunModel, _baseShader);
+    gun.AddComponent<Scene::CollisionComponent>(gun);
+    return gun;
 }
 

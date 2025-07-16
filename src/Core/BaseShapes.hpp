@@ -3,6 +3,7 @@
 #ifndef BASESHAPES_HPP
 #define BASESHAPES_HPP
 #include <vector>
+#include <cmath>
 
 #include "VBO.hpp"
 
