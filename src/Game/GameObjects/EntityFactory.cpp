@@ -48,8 +48,8 @@ void EntityFactory::InitResources()
             // Head
             { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.6f)), glm::vec3(0.0f, 1.3f, 0.0f)) },
             // Arms
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(0.45f, 0.1f, 0.0f)) },
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(-0.45f, 0.1f, 0.0f)) },
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(0.55f, 0.1f, 0.0f)) },
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(-0.55f, 0.1f, 0.0f)) },
             // Legs
             { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(0.2f, -0.9f, 0.0f)) },
             { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(-0.2f, -0.9f, 0.0f)) }
@@ -63,8 +63,8 @@ void EntityFactory::InitResources()
         std::vector<Core::MeshTransform> parts = {
             { cube, glm::scale(glm::mat4(1.0f), glm::vec3(0.6f, 1.0f, 0.3f)) },
             { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.6f)), glm::vec3(0.0f, 1.3f, 0.0f)) },
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(0.45f, 0.1f, 0.0f)) },
-            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(-0.45f, 0.1f, 0.0f)) },
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(0.55f, 0.1f, 0.0f)) },
+            { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(-0.55f, 0.1f, 0.0f)) },
             { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(0.2f, -0.9f, 0.0f)) },
             { cube, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.8f, 0.2f)), glm::vec3(-0.2f, -0.9f, 0.0f)) }
         };
@@ -190,7 +190,8 @@ ECS::Entity EntityFactory::CreateCoin(Scene::Scene& scene, glm::mat4 transform)
     InitResources();
     auto coin = scene.AddEntity();
     auto& coinTransform = coin.AddComponent<Scene::TransformComponent>(transform);
-    coinTransform.Transform = glm::scale(coinTransform.Transform, glm::vec3(0.5f));
+    coinTransform.Transform = glm::scale(coinTransform.Transform, glm::vec3(0.8f));
+    coinTransform.Transform = glm::rotate(coinTransform.Transform, glm::half_pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
     coinTransform.Transform = glm::translate(coinTransform.Transform, glm::vec3(0.0f, 0.5f, 0.0f));
     coin.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(1.0, 0.843, 0.0, 1.0));
     coin.AddComponent<Scene::ModelComponent>(_coinModel, _baseShader);
