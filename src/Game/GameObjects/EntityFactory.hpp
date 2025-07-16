@@ -7,6 +7,7 @@
 #include "ECS/Entity.hpp"
 #include "Core/Mesh.hpp"
 #include "Core/Shader.hpp"
+#include "Core/Model.hpp"
 
 class EntityFactory
 {
@@ -23,6 +24,9 @@ private:
     static std::shared_ptr<Core::Mesh> _cubeMesh;
     static std::shared_ptr<Core::Mesh> _sphereMesh;
     static std::shared_ptr<Core::Shader> _baseShader;
+    static std::shared_ptr<Core::Model> _playerModel;
+    static std::shared_ptr<Core::Model> _zombieModel;
+    static std::shared_ptr<Core::Model> _coinModel;
 };
 
 #endif //ENTITYFACTORY_HPP

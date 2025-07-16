@@ -126,6 +126,58 @@ namespace Core {
 
             return {vertices, indices};
         }
+
+        static Shape Cylinder()
+        {
+            const int segments = 36;
+            const float radius = 0.5f;
+            const float height = 1.0f;
+
+            std::vector<Vertex> vertices;
+            std::vector<unsigned int> indices;
+
+            for (int i = 0; i <= segments; ++i)
+            {
+                float angle = static_cast<float>(i) / segments * 2.0f * M_PI;
+                float x = cos(angle) * radius;
+                float z = sin(angle) * radius;
+
+                vertices.push_back({ {x, -height * 0.5f, z}, {x, 0.0f, z} });
+                vertices.push_back({ {x,  height * 0.5f, z}, {x, 0.0f, z} });
+            }
+
+            for (int i = 0; i < segments; ++i)
+            {
+                int base = i * 2;
+                indices.push_back(base);
+                indices.push_back(base + 1);
+                indices.push_back(base + 2);
+
+                indices.push_back(base + 2);
+                indices.push_back(base + 1);
+                indices.push_back(base + 3);
+            }
+
+            int bottomCenter = vertices.size();
+            vertices.push_back({ {0.0f, -height * 0.5f, 0.0f}, {0.0f, -1.0f, 0.0f} });
+            int topCenter = vertices.size();
+            vertices.push_back({ {0.0f,  height * 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f} });
+
+            for (int i = 0; i < segments; ++i)
+            {
+                int base = i * 2;
+                int next = ((i + 1) % segments) * 2;
+                indices.push_back(bottomCenter);
+                indices.push_back(next);
+                indices.push_back(base);
+
+                indices.push_back(topCenter);
+                indices.push_back(base + 1);
+                indices.push_back(next + 1);
+            }
+
+            return { vertices, indices };
+        }
     };
 }
 

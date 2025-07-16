@@ -8,9 +8,14 @@
 #include "Game/Components/PlayerController.hpp"
 #include "Game/Components/ZombieController.hpp"
 #include "Scene/Components.hpp"
+#include "Core/ModelBuilder.hpp"
+#include "Core/Model.hpp"
 std::shared_ptr<Core::Mesh> EntityFactory::_cubeMesh = nullptr;
 std::shared_ptr<Core::Mesh> EntityFactory::_sphereMesh = nullptr;
 std::shared_ptr<Core::Shader> EntityFactory::_baseShader = nullptr;
+std::shared_ptr<Core::Model> EntityFactory::_playerModel = nullptr;
+std::shared_ptr<Core::Model> EntityFactory::_zombieModel = nullptr;
+std::shared_ptr<Core::Model> EntityFactory::_coinModel = nullptr;
 
 void EntityFactory::InitResources()
 {
@@ -28,6 +33,37 @@ void EntityFactory::InitResources()
     {
         _baseShader = std::make_shared<Core::Shader>("../src/Core/BaseShader.vert", "../src/Core/BaseShader.frag");
     }
+
+    if (!_playerModel)
+    {
+        auto body = Core::BaseShapes::Cube();
+        auto head = Core::BaseShapes::Sphere();
+        std::vector<Core::MeshTransform> parts = {
+            { body, glm::scale(glm::mat4(1.0f), glm::vec3(0.6f, 1.0f, 0.4f)) },
+            { head, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.35f)), glm::vec3(0.0f, 0.75f, 0.0f)) }
+        };
+        _playerModel = Core::ModelBuilder::FromShapes(parts);
+    }
+
+    if (!_zombieModel)
+    {
+        auto body = Core::BaseShapes::Cube();
+        auto head = Core::BaseShapes::Sphere();
+        std::vector<Core::MeshTransform> parts = {
+            { body, glm::scale(glm::mat4(1.0f), glm::vec3(0.6f, 1.0f, 0.4f)) },
+            { head, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.35f)), glm::vec3(0.0f, 0.75f, 0.0f)) }
+        };
+        _zombieModel = Core::ModelBuilder::FromShapes(parts);
+    }
+
+    if (!_coinModel)
+    {
+        auto sphere = Core::BaseShapes::Sphere();
+        std::vector<Core::MeshTransform> parts = {
+            { sphere, glm::scale(glm::mat4(1.0f), glm::vec3(0.5f)) }
+        };
+        _coinModel = Core::ModelBuilder::FromShapes(parts);
+    }
 }
 ECS::Entity EntityFactory::CreatePlayer(Scene::Scene& scene, glm::mat4 transform)
 {
@@ -37,7 +73,7 @@ ECS::Entity EntityFactory::CreatePlayer(Scene::Scene& scene, glm::mat4 transform
     player.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(0.8627f, 0.0784f, 0.2353f, 1.0f));
     auto& camera = player.AddComponent<Scene::CameraComponent>(Core::Camera());
     camera.Camera.Translate(glm::vec3(10.0f, 25.0f, 10.0f));
-    player.AddComponent<Scene::MeshComponent>(_cubeMesh, _baseShader);
+    player.AddComponent<Scene::ModelComponent>(_playerModel, _baseShader);
     player.AddComponent<Scene::ScriptableComponent>().Bind<PlayerController>();
     player.AddComponent<Scene::CollisionComponent>(player);
     player.AddComponent<Scene::HealthComponent>();
@@ -57,7 +93,7 @@ ECS::Entity EntityFactory::CreateZombie(Scene::Scene& scene, glm::mat4 transform
     zombie.AddComponent<Scene::DamageComponent>();
     zombie.AddComponent<Scene::TransformComponent>(transform);
     zombie.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(0.1961f, 0.8039f, 0.1961f, 1.0f));
-    zombie.AddComponent<Scene::MeshComponent>(_cubeMesh, _baseShader);
+    zombie.AddComponent<Scene::ModelComponent>(_zombieModel, _baseShader);
     zombie.AddComponent<Scene::CollisionComponent>(zombie);
 
     return zombie;
@@ -87,7 +123,7 @@ ECS::Entity EntityFactory::CreateCoin(Scene::Scene& scene, glm::mat4 transform)
     coinTransform.Transform = glm::scale(coinTransform.Transform, glm::vec3(0.5f));
     coinTransform.Transform = glm::translate(coinTransform.Transform, glm::vec3(0.0f, 0.5f, 0.0f));
     coin.AddComponent<Scene::SpriteRendererComponent>(glm::vec4(1.0, 0.843, 0.0, 1.0));
-    coin.AddComponent<Scene::MeshComponent>(_sphereMesh, _baseShader);
+    coin.AddComponent<Scene::ModelComponent>(_coinModel, _baseShader);
     coin.AddComponent<Scene::CollisionComponent>(coin);
     coin.AddComponent<Scene::CoinComponent>();
 

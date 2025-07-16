@@ -13,6 +13,7 @@ namespace Core {
     {
     public:
         explicit Model(const std::string& path);
+        explicit Model(std::vector<std::shared_ptr<Mesh>> meshes);
         void Draw(const Shader& shader, const std::vector<std::function<void(const Shader&)>>& setFunctions, bool bindShader = true) const;
         void DrawInstanced(const Shader& shader,
                            const std::vector<std::function<void(const Shader&)>>& setFunctions,
