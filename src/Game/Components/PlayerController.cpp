@@ -7,6 +7,7 @@
 #include <imgui/imgui.h>
 
 #include "BulletController.hpp"
+#include "Game/GameObjects/EntityFactory.hpp"
 #include "Core/InputManager.hpp"
 #include "Core/WindowManager.hpp"
 #include "Scene/Components.hpp"
@@ -30,6 +31,55 @@ void PlayerController::OnUpdate(float deltaTime)
     auto& camera = GetComponent<Scene::CameraComponent>().Camera;
     auto& transform = GetComponent<Scene::TransformComponent>().Transform;
     auto& collision = GetComponent<Scene::CollisionComponent>();
+
+    const auto currentItem = _inventory->GetCurrentItemData();
+    Scene::Scene* scene = _entity.GetScene();
+    if (currentItem.Type == ItemType::GUN)
+    {
+        glm::mat4 gunTransform = transform *
+            glm::translate(glm::mat4(1.0f), glm::vec3(0.45f, 0.1f, 0.3f)) *
+            glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
+
+        if (_gunEntity.GetId() == -1 || _equippedGunName != currentItem.Name)
+        {
+            if (_gunEntity.GetId() != -1)
+            {
+                scene->RemoveEntity(_gunEntity.GetId());
+            }
+
+            if (currentItem.Name == "Pistol")
+            {
+                _gunEntity = EntityFactory::CreatePistol(*scene, gunTransform);
+            }
+            else if (currentItem.Name == "Burst Rifle")
+            {
+                _gunEntity = EntityFactory::CreateBurstRifle(*scene, gunTransform);
+            }
+            else if (currentItem.Name == "Shotgun")
+            {
+                _gunEntity = EntityFactory::CreateShotgun(*scene, gunTransform);
+            }
+            else if (currentItem.Name == "Rifle")
+            {
+                _gunEntity = EntityFactory::CreateRifle(*scene, gunTransform);
+            }
+            else if (currentItem.Name == "Minigun")
+            {
+                _gunEntity = EntityFactory::CreateMinigun(*scene, gunTransform);
+            }
+            _equippedGunName = currentItem.Name;
+        }
+        else if (_gunEntity.GetId() != -1)
+        {
+            _gunEntity.GetComponent<Scene::TransformComponent>().Transform = gunTransform;
+        }
+    }
+    else if (_gunEntity.GetId() != -1)
+    {
+        scene->RemoveEntity(_gunEntity.GetId());
+        _gunEntity = {-1, nullptr};
+        _equippedGunName.clear();
+    }
 
     double mouseX = Core::InputManager::GetMouseX();
     double mouseY = Core::InputManager::GetMouseY();
